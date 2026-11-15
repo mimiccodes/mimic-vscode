@@ -18,18 +18,21 @@ Support for [Mimic](https://github.com/mimiccodes/mimic), the compiled array lan
 * **Debugging**: breakpoints on `.mim` lines, stepping, the call stack, and variables shown as Mimic prints them (`[3 1 4]`, `Point { x: 1.5, y: 2.0 }`, `["a": 1]`, `Some(7)`). Press **F5**, or **Debug** above `fn main`. It runs `mimic dap`, which needs LLVM's `lldb-dap` (with Xcode on macOS, the `lldb` package on Linux).
 * **The manual** beside your code: *Mimic: Open the Manual…*, *Search the Manual…*, or `Cmd+Alt+M` / `Ctrl+Alt+M` for the word under the cursor.
 
+* **Setup that just works**: the extension finds Mimic as your terminal does, or where its installer puts it; the status bar shows its version and what it can do; *Mimic: Install or Update Mimic* installs the release for your machine from GitHub (checked against its `SHA256SUMS`); a daily check says when a newer Mimic or extension is out.
+
 ## Requirements
 
-A `mimic` with the language server (`mimic lsp`, from 0.3.4; `mimic dap` for debugging, from 0.3.6), on your `PATH` (or set `mimic.path`). Download it from the [releases](https://github.com/mimiccodes/mimic/releases); the extension offers the download when `mimic` is missing or too old.
+Mimic, from the [releases](https://github.com/mimiccodes/mimic/releases), or *Mimic: Install or Update Mimic*. Errors as you type, hover and completion need Mimic 0.3.4 or newer (`mimic lsp`), debugging 0.3.6 (`mimic dap`); with an older Mimic, errors show when you save. [ROADMAP.md](ROADMAP.md) lists what comes next.
 
 ## Settings
 
 | Setting | Default | |
 |---|---|---|
-| `mimic.path` | `mimic` | The `mimic` program |
+| `mimic.path` | (empty: found) | The `mimic` program, if it is not where your terminal or the installer finds it |
 | `mimic.languageServer.enable` | `true` | Run `mimic lsp` |
 | `mimic.codeLens.enable` | `true` | **Run** and **Run test** above functions and tests |
-| `mimic.checkVersion` | `true` | Check that `mimic` has the language server |
+| `mimic.checkVersion` | `true` | Say when `mimic` has no language server |
+| `mimic.checkForUpdates` | `true` | Once a day, check GitHub for a newer Mimic and extension |
 
 ## Development
 

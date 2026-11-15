@@ -1,8 +1,8 @@
 {
   "name": "mimic",
   "displayName": "Mimic",
-  "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run and Test, the test explorer and the manual.",
-  "version": "0.3.6",
+  "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run, Test and Debug, the test explorer, the manual, and installing Mimic.",
+  "version": "0.4.0",
   "publisher": "mimiccodes",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
@@ -124,8 +124,8 @@
       "properties": {
         "mimic.path": {
           "type": "string",
-          "default": "mimic",
-          "markdownDescription": "The `mimic` program: a name on your `PATH`, or a full path."
+          "default": "",
+          "markdownDescription": "The `mimic` program, as a full path. Leave empty to find it as your terminal does (VS Code's `PATH`, then your shell's), then where the installers put it (`~/.mimic/bin`)."
         },
         "mimic.languageServer.enable": {
           "type": "boolean",
@@ -141,6 +141,11 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "Show **Run** above `fn main` and **Run test** above each `test` block."
+        },
+        "mimic.checkForUpdates": {
+          "type": "boolean",
+          "default": true,
+          "description": "Once a day, check GitHub for a newer Mimic and a newer version of this extension."
         }
       }
     },
@@ -215,6 +220,26 @@
       {
         "command": "mimic.showOutput",
         "title": "Show the Language Server's Output",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.install",
+        "title": "Install or Update Mimic",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.checkForUpdates",
+        "title": "Check for a Newer Mimic",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.choosePath",
+        "title": "Choose the mimic Program…",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.status",
+        "title": "Show Mimic Status",
         "category": "Mimic"
       }
     ],
@@ -332,6 +357,64 @@
           }
         ]
       }
+    ],
+    "walkthroughs": [
+      {
+        "id": "mimic.start",
+        "title": "Get Started with Mimic",
+        "description": "Install Mimic, write and run a program, type glyphs, test and debug.",
+        "steps": [
+          {
+            "id": "install",
+            "title": "Install Mimic",
+            "description": "The extension finds Mimic where its installer puts it (~/.mimic/bin) or on your PATH. If you have none yet:\n[Install Mimic](command:mimic.install)",
+            "media": {
+              "markdown": "walkthrough/install.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.install"
+            ]
+          },
+          {
+            "id": "project",
+            "title": "Create a project",
+            "description": "Make a folder with a project in it, then open it.\n[New Project in a Terminal](command:workbench.action.terminal.new)",
+            "media": {
+              "markdown": "walkthrough/project.md"
+            }
+          },
+          {
+            "id": "glyphs",
+            "title": "Type glyphs",
+            "description": "Every glyph has a word, and a shortcut: type `\\i` for `⍳`. Or open the palette.\n[Open the Glyph Palette](command:mimic.insertGlyph)",
+            "media": {
+              "markdown": "walkthrough/glyphs.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.insertGlyph"
+            ]
+          },
+          {
+            "id": "run",
+            "title": "Run, test and debug",
+            "description": "**▶ Run** above `fn main`, **▶ Run test** above each test, the Test Explorer, and **Debug** (F5).",
+            "media": {
+              "markdown": "walkthrough/run.md"
+            }
+          },
+          {
+            "id": "manual",
+            "title": "Read the manual",
+            "description": "The whole manual is inside Mimic. F1 on a word in the code opens its page.\n[Open the Manual](command:mimic.openManual)",
+            "media": {
+              "markdown": "walkthrough/manual.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.openManual"
+            ]
+          }
+        ]
+      }
     ]
   },
   "scripts": {
@@ -344,7 +427,7 @@
     "vscode-languageclient": "9.0.1"
   },
   "devDependencies": {
-    "@vscode/vsce": "3.6.2",
-    "@vscode/test-electron": "2.5.2"
+    "@vscode/test-electron": "3.1.0",
+    "@vscode/vsce": "3.6.2"
   }
 }

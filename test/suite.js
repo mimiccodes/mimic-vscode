@@ -24,6 +24,10 @@ exports.run = async function () {
   const ext = vscode.extensions.all.find((e) => e.packageJSON.name === "mimic");
   await until("activation", () => ext.isActive || ext.activate().then(() => true));
 
+  // the mimic it found, and what that mimic can do
+  const found = ext.exports.mimic();
+  assert.ok(found.path && found.version && found.commands.has("lsp"), JSON.stringify(found));
+
   // hover from mimic lsp: signature, effects and comment
   const hover = await until("hover", async () => {
     const h = await vscode.commands.executeCommand("vscode.executeHoverProvider", uri, new vscode.Position(6, 12));

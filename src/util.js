@@ -45,4 +45,74 @@ function parseTestOutput(text) {
   return results;
 }
 
-module.exports = { newer, MAIN, TEST, testsIn, parseTestOutput };
+/** `mimic 0.2.9 (58aa56c42, LLVM 23.1.4)` → `0.2.9`. */
+function parseVersion(text) {
+  const m = /mimic (\d+\.\d+\.\d+)/.exec(text || "");
+  return m ? m[1] : undefined;
+}
+
+/** The subcommands `mimic --help` lists (what this mimic can do). */
+function parseCommands(help) {
+  const out = new Set();
+  let inside = false;
+  for (const line of (help || "").split(/\r?\n/)) {
+    if (/^Commands:/.test(line)) {
+      inside = true;
+      continue;
+    }
+    if (inside) {
+      const m = /^ {2}([a-z][a-z0-9-]*)\b/.exec(line);
+      if (m) out.add(m[1]);
+      else if (line.trim() && !/^\s/.test(line)) break;
+    }
+  }
+  return out;
+}
+
+/** The release package for this machine (`macos-arm64`, …), if there is one. */
+function platformTag(platform, arch) {
+  if (platform === "darwin" && arch === "arm64") return "macos-arm64";
+  if (platform === "linux" && arch === "x64") return "linux-x86_64";
+  if (platform === "win32" && arch === "x64") return "windows-x86_64";
+  return undefined;
+}
+
+function assetName(version, tag) {
+  return `mimic-${version}-${tag}${tag.startsWith("windows") ? ".zip" : ".tar.gz"}`;
+}
+
+/** The SHA-256 a `SHA256SUMS` file gives for `name`. */
+function sumFor(sums, name) {
+  for (const line of (sums || "").split(/\r?\n/)) {
+    const m = /^([0-9a-f]{64})\s+\*?(.+)$/.exec(line.trim());
+    if (m && m[2].trim() === name) return m[1];
+  }
+  return undefined;
+}
+
+/** `mimic check --emit-json` → problems: file, 0-based range, severity. */
+function checkProblems(json, cwd) {
+  const out = [];
+  for (const d of (json && json.diagnostics) || []) {
+    const loc = d.location;
+    if (!loc || !loc.file) continue;
+    const file = require("path").isAbsolute(loc.file) ? loc.file : require("path").join(cwd || "", loc.file);
+    const help = [...(d.help || []), ...(d.notes || [])].join("\n");
+    out.push({
+      file,
+      start: [Math.max(0, loc.start.line - 1), Math.max(0, loc.start.column - 1)],
+      end: [Math.max(0, loc.end.line - 1), Math.max(0, loc.end.column - 1)],
+      severity: d.severity === "error" ? "error" : "warning",
+      code: d.code,
+      message: help ? `${d.message}\n${help}` : d.message,
+    });
+  }
+  return out;
+}
+
+/** Once a day: is `last` (ms) at least `every` ms before `now`? */
+function due(last, now, every = 24 * 3600 * 1000) {
+  return !last || now - last >= every;
+}
+
+module.exports = { newer, MAIN, TEST, testsIn, parseTestOutput, parseVersion, parseCommands, platformTag, assetName, sumFor, checkProblems, due };

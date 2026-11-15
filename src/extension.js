@@ -1,20 +1,17 @@
 // Mimic for VS Code. The language itself (errors, hover, definitions,
 // completion, formatting) comes from `mimic lsp`, the same engine the
 // compiler uses; this file adds what belongs to the editor: the glyph
-// palette, Run and Test, the test explorer, the manual, and a check that
-// the installed `mimic` is new enough.
+// palette, Run and Test, the test explorer, the manual; setup.js finds the
+// installed `mimic`, installs or updates it, and says what it can do.
 
 const vscode = require("vscode");
 const path = require("path");
 const fs = require("fs");
-const cp = require("child_process");
 const { LanguageClient } = require("vscode-languageclient/node");
 const GLYPHS = require("./glyphs.json");
 const { MAIN, TEST, testsIn, parseTestOutput } = require("./util");
-
-/** The oldest `mimic` with everything this extension uses (`mimic lsp`). */
-const NEEDS = "0.3.4";
-const RELEASES = "https://github.com/mimiccodes/mimic/releases";
+const setup = require("./setup");
+const { exec } = require("./mimic");
 
 let client;
 let output;
@@ -25,16 +22,12 @@ function config() {
 }
 
 function mimicPath() {
-  return config().get("path") || "mimic";
+  return setup.mimicPath();
 }
 
 /** Run `mimic` with `args`; resolves to { code, stdout, stderr }. */
 function mimic(args, cwd) {
-  return new Promise((resolve) => {
-    cp.execFile(mimicPath(), args, { cwd, maxBuffer: 64 * 1024 * 1024, env: { ...process.env, NO_COLOR: "1" } }, (err, stdout, stderr) => {
-      resolve({ code: err ? (typeof err.code === "number" ? err.code : -1) : 0, stdout: String(stdout), stderr: String(stderr), missing: err && err.code === "ENOENT" });
-    });
-  });
+  return exec(mimicPath(), args, { cwd });
 }
 
 /** The folder holding mim.mim above `file`, if any. */
@@ -48,44 +41,10 @@ function projectRoot(file) {
   }
 }
 
-// ---- the installed mimic ---------------------------------------------------
-
-async function checkVersion() {
-  const r = await mimic(["--version"]);
-  if (r.missing || r.code !== 0) {
-    // (never awaited: activation must not wait for someone to click)
-    vscode.window
-      .showWarningMessage(`Mimic: \`${mimicPath()}\` was not found. Install Mimic, or set "mimic.path".`, "Download Mimic", "Set Path")
-      .then((pick) => {
-        if (pick === "Download Mimic") vscode.env.openExternal(vscode.Uri.parse(RELEASES));
-        if (pick === "Set Path") vscode.commands.executeCommand("workbench.action.openSettings", "mimic.path");
-      });
-    return false;
-  }
-  // what this extension needs is `mimic lsp` (and `mimic dap` for debugging),
-  // in any build that has them, released or built from source
-  const lsp = await mimic(["lsp", "--help"]);
-  if (lsp.code !== 0 && config().get("checkVersion")) {
-    const m = /mimic (\d+\.\d+\.\d+)/.exec(r.stdout);
-    vscode.window
-      .showWarningMessage(
-        `Mimic ${m ? m[1] : ""} has no language server (\`mimic lsp\`, from ${NEEDS}): errors as you type, hover and completion need a newer Mimic.`,
-        "Download Mimic",
-        "Don't Ask Again",
-      )
-      .then((pick) => {
-        if (pick === "Download Mimic") vscode.env.openExternal(vscode.Uri.parse(RELEASES));
-        if (pick === "Don't Ask Again") config().update("checkVersion", false, vscode.ConfigurationTarget.Global);
-      });
-    return false;
-  }
-  return true;
-}
-
 // ---- the language server ------------------------------------------------------
 
 async function startServer(context) {
-  if (!config().get("languageServer.enable")) return;
+  if (!config().get("languageServer.enable") || !setup.has("lsp")) return;
   client = new LanguageClient(
     "mimic",
     "Mimic",
@@ -158,7 +117,7 @@ async function run(uri) {
 /** Debug the program of `uri` (a file, or its project) with `mimic dap`. */
 async function debug(uri) {
   const file = uri instanceof vscode.Uri ? uri.fsPath : vscode.window.activeTextEditor?.document.uri.fsPath;
-  if (!file) return;
+  if (!file || !setup.need("dap")) return;
   await vscode.workspace.saveAll(false);
   const folder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(file));
   await vscode.debug.startDebugging(folder, { type: "mimic", request: "launch", name: "Debug " + path.basename(projectRoot(file) || file), program: projectRoot(file) || file });
@@ -167,6 +126,7 @@ async function debug(uri) {
 class DebugConfigs {
   // F5 with no launch.json: the active file's project, or the file
   resolveDebugConfiguration(folder, config) {
+    if (!setup.need("dap")) return undefined;
     if (!config.type && !config.request) {
       const file = vscode.window.activeTextEditor?.document.uri.fsPath;
       if (!file || !file.endsWith(".mim")) return undefined;
@@ -406,12 +366,16 @@ async function activate(context) {
       createDebugAdapterDescriptor: () => new vscode.DebugAdapterExecutable(mimicPath(), ["dap"]),
     }),
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration("mimic.path") || e.affectsConfiguration("mimic.languageServer")) restartServer(context);
+      if (e.affectsConfiguration("mimic.path")) setup.refresh();
+      else if (e.affectsConfiguration("mimic.languageServer")) restartServer(context);
     }),
   );
   setUpTests(context);
-  const ok = await checkVersion();
-  if (ok) await startServer(context);
+  // a different mimic (installed, updated, chosen): its language server
+  setup.onChange(() => restartServer(context));
+  await setup.start(context, output);
+  // for tests and other extensions: the mimic in use
+  return { mimic: () => setup.found() };
 }
 
 function deactivate() {
