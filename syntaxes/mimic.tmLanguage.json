@@ -97,9 +97,12 @@
       ]
     },
     "test": {
-      "match": "\\b(test)\\b(?=\\s*\")",
+      "match": "\\b(test)\\b(?=\\s*\")|(?<=\")\\s+(for)\\b",
       "captures": {
         "1": {
+          "name": "keyword.other.test.mimic"
+        },
+        "2": {
           "name": "keyword.other.test.mimic"
         }
       }
@@ -298,6 +301,10 @@
     },
     "keyword": {
       "patterns": [
+        {
+          "name": "keyword.other.contract.mimic",
+          "match": "^\\s*(requires|ensures)\\b"
+        },
         {
           "name": "keyword.control.mimic",
           "match": "\\b(if|else|match|return|arms|with)\\b"
