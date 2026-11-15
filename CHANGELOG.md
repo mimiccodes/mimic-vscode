@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.0
+
+- **The Audit view** in the Mimic side bar: errors, warnings and notes, how many are new since the baseline, the trend of the last audits, and the findings by rule (click to jump).
+- **Format on save in words or glyphs** (`mimic.format.onSave`: `words` or `glyphs`); formatting that keeps the file's style stays VS Code's own `editor.formatOnSave`.
+- **Export as animation**: a trace's rounds as one SVG that plays them.
+
 ## 0.8.0
 
 - **Notebooks** (`.mimnb`, *Mimic: New Notebook*): Markdown and code cells; the code cells of a notebook share one session (`mimic repl --json`), so a cell's `let`s and `fn`s are there for the next. *Restart the Notebook's Session* empties it.

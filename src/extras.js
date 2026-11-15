@@ -323,6 +323,7 @@ async function pickTarget() {
 // ---- audit in Problems --------------------------------------------------------------------------
 
 let auditDiags;
+let auditView;
 async function audit(doc) {
   if (!config().get("audit.onSave") || doc.languageId !== "mimic" || doc.uri.scheme !== "file" || !setup.has("audit")) return;
   const root = projectRoot(doc.uri.fsPath);
@@ -346,6 +347,78 @@ async function audit(doc) {
   }
   auditDiags.clear();
   for (const [f, ds] of byFile) auditDiags.set(vscode.Uri.file(f), ds);
+  auditView.show(report, root || path.dirname(doc.uri.fsPath));
+}
+
+/** The Audit view: the counts, the trend of past runs, findings by rule. */
+class AuditView {
+  constructor() {
+    this.changed = new vscode.EventEmitter();
+    this.onDidChangeTreeData = this.changed.event;
+    this.report = null;
+  }
+  show(report, root) {
+    this.report = report;
+    this.root = root;
+    this.changed.fire();
+  }
+  getTreeItem(x) {
+    return x;
+  }
+  getChildren(parent) {
+    if (parent) return parent.children || [];
+    if (!this.report) return [new vscode.TreeItem("Save a Mimic file to audit it")];
+    const fs_ = this.report.findings || [];
+    const count = (sev) => fs_.filter((f) => f.severity === sev).length;
+    const head = new vscode.TreeItem(`${count("error")} errors, ${count("warning")} warnings, ${count("note")} notes`);
+    head.iconPath = new vscode.ThemeIcon(count("error") ? "error" : count("warning") ? "warning" : "pass");
+    const fresh = fs_.filter((f) => f.new).length;
+    head.description = fresh && fresh !== fs_.length ? `${fresh} new since the baseline` : "";
+    const out = [head];
+    // the trend: the last runs' totals, from target/audit/history-*.jsonl
+    try {
+      const dir = path.join(this.root, "target", "audit");
+      const file = fs.readdirSync(dir).find((f) => f.startsWith("history-") && f.endsWith(".jsonl"));
+      const runs = fs.readFileSync(path.join(dir, file), "utf8").trim().split("\n").slice(-8).map((l) => JSON.parse(l));
+      if (runs.length > 1) {
+        const t = new vscode.TreeItem(`trend: ${runs.map((x) => x.total).join(" → ")}`);
+        t.iconPath = new vscode.ThemeIcon(runs[runs.length - 1].total <= runs[0].total ? "arrow-down" : "arrow-up");
+        t.tooltip = "Findings in the last audits, oldest first";
+        out.push(t);
+      }
+    } catch {}
+    const byRule = new Map();
+    for (const f of fs_) {
+      const k = `${f.rule} ${f.name}`;
+      if (!byRule.has(k)) byRule.set(k, []);
+      byRule.get(k).push(f);
+    }
+    for (const [rule, list] of byRule) {
+      const it = new vscode.TreeItem(rule, vscode.TreeItemCollapsibleState.Collapsed);
+      it.description = `${list.length} · ${list[0].severity}`;
+      it.iconPath = new vscode.ThemeIcon(list[0].category === "security" ? "shield" : "lightbulb");
+      it.tooltip = list[0].help || "";
+      it.children = list.map((f) => {
+        const c = new vscode.TreeItem(f.message);
+        c.description = `${f.file}:${f.line}`;
+        c.tooltip = f.help || "";
+        c.command = { command: "mimic.openAt", title: "Open", arguments: [f.path || path.resolve(this.root, f.file), f.line] };
+        return c;
+      });
+      out.push(it);
+    }
+    return out;
+  }
+}
+
+/** After a save: words or glyphs throughout (mimic.format.onSave). */
+async function formatOnSave(doc) {
+  const style = config().get("format.onSave");
+  if (doc.languageId !== "mimic" || doc.uri.scheme !== "file" || !style || style === "off" || setup.found().missing) return;
+  const args = ["fmt", doc.uri.fsPath];
+  if (style === "glyphs") args.splice(1, 0, "--glyphs");
+  const r = await exec(setup.mimicPath(), args, { cwd: path.dirname(doc.uri.fsPath) });
+  if (r.code !== 0) setup.log(`mimic fmt: ${(r.stderr || r.stdout).trim()}`);
 }
 
 // ---- docs, UI preview, manual examples ----------------------------------------------------------
@@ -466,12 +539,14 @@ function start(context) {
   targetItem.command = "mimic.pickTarget";
   targetItem.name = "Mimic target";
   const modules = new Modules();
+  auditView = new AuditView();
   context.subscriptions.push(
     auditDiags,
     targetItem,
     vscode.workspace.onDidChangeTextDocument(glyphAsYouType),
     vscode.window.registerWebviewViewProvider("mimic.glyphs", new GlyphView()),
     vscode.window.registerTreeDataProvider("mimic.modules", modules),
+    vscode.window.registerTreeDataProvider("mimic.audit", auditView),
     vscode.commands.registerCommand("mimic.refreshModules", () => modules.changed.fire()),
     vscode.languages.registerCompletionItemProvider({ language: "mimic", pattern: "**/mim.mim" }, new ManifestCompletion()),
     vscode.languages.registerCodeLensProvider({ language: "mimic", pattern: "**/mim.mim" }, new ManifestLenses()),
@@ -487,7 +562,7 @@ function start(context) {
     vscode.commands.registerCommand("mimic.agentGuide", () => vscode.commands.executeCommand("mimic.manualPage", "agents")),
     vscode.commands.registerCommand("mimic.runManualExample", runManualExample),
     vscode.workspace.onDidSaveTextDocument((d) => {
-      audit(d);
+      formatOnSave(d).then(() => audit(d));
       if (d.languageId === "mimic") modules.changed.fire();
     }),
     vscode.workspace.onDidChangeConfiguration((e) => e.affectsConfiguration("mimic.target") && showTarget()),

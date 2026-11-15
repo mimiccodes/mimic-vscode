@@ -42,7 +42,7 @@ Items marked **(mimic)** also need work in the compiler, in the
 | ✅ | N9. Before and after compile-time reduction |
 | ✅ | N10. `.mnet` editing: errors on save, hover on node kinds, formatting |
 | ✅ | N11. Limits for big nets (sampled traces, said so) |
-| ◐ | N12. Export as SVG ✅; an animated trace to come |
+| ✅ | N12. Export as SVG, and a trace as an SVG that plays its rounds |
 
 ## Phase 4: everything else
 
@@ -55,7 +55,7 @@ Items marked **(mimic)** also need work in the compiler, in the
 | ✅ | B15. Rename **(mimic)** |
 | ✅ | B16. Inferred types as inlay hints **(mimic)** |
 | ✅ | B17. Folding by brackets and indentation; smart selection (from `mimic lsp`) |
-| ◐ | B18. Format on save through the language server (`"[mimic]": { "editor.formatOnSave": true }`) ✅; choosing words or glyphs on save |
+| ✅ | B18. Format on save: keeping the file's style (`"[mimic]": { "editor.formatOnSave": true }`), or all words or all glyphs (`mimic.format.onSave`) |
 | ◐ | B19. More code actions: write an inferred type in ✅; extract a function, inline a `let` to come **(mimic)** |
 | ✅ | C21. Call hierarchy **(mimic)** |
 | ✅ | C22. A module tree from `mod.mim` |
@@ -69,7 +69,7 @@ Items marked **(mimic)** also need work in the compiler, in the
 | · | D31. Debugger: Mimic watch expressions, conditional breakpoints, arrays as tables |
 | ✅ | E38. Target and GPU picker |
 | ✅ | F39. `mimic audit` findings in Problems on save |
-| ◐ | F40. Audit findings in Problems, with the rule's page as the code's link ✅; a summary and trend view |
+| ✅ | F40. The Audit view: the counts, new since the baseline, the trend of the last audits, findings by rule |
 | ✅ | G42. The Glyphs view: every glyph by group, its word, digraph and meaning, searchable, inserted with a click |
 | ✅ | G43. *Run an Example from the Manual…* |
 | ✅ | G44. `mimic doc` preview |

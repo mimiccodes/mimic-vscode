@@ -385,6 +385,27 @@
     vscode.postMessage({ type: "export", svg: new XMLSerializer().serializeToString(g), name: (current() ? current().def : "net") + (trace ? `-round${frame}` : "") });
   }
 
+  /** The rounds drawn so far as one SVG that plays them (0.7 s each). */
+  function exportAnimation() {
+    if (!trace || !trace.frames.length) return;
+    const keep = frame;
+    const groups = [];
+    let box = null;
+    const step = 0.7;
+    for (let i = 0; i < trace.frames.length; i++) {
+      showFrame(i, i === 0);
+      const v = { ...view };
+      box = box ? { x: Math.min(box.x, v.x), y: Math.min(box.y, v.y), r: Math.max(box.r, v.x + v.w), b: Math.max(box.b, v.y + v.h) } : { x: v.x, y: v.y, r: v.x + v.w, b: v.y + v.h };
+      const last = i === trace.frames.length - 1;
+      const anim = `<set attributeName="visibility" to="visible" begin="${(i * step).toFixed(2)}s"${last ? ' fill="freeze"' : ` dur="${step}s"`}/>`;
+      groups.push(`<g visibility="hidden">${anim}${$("graph").innerHTML}<text x="${v.x + 8}" y="${v.y + 16}" class="round">round ${i} of ${trace.rounds}</text></g>`);
+    }
+    showFrame(keep);
+    const style = ".wire{fill:none;stroke:#888;stroke-width:1.5}.wire.active{stroke:#E24B04;stroke-width:3}.label{font:600 12px sans-serif;fill:#111}.label.light{fill:#ddd}.side{font:11px monospace;fill:#ccc}.principal{fill:#111}.round{font:12px sans-serif;fill:#aaa}";
+    const svgText = `<svg xmlns="${svgNS}" viewBox="${box.x} ${box.y} ${box.r - box.x} ${box.b - box.y}" style="background:#1e1e1e"><style>${style}</style>${groups.join("")}</svg>`;
+    vscode.postMessage({ type: "export", svg: svgText, name: `${current() ? current().def : "net"}-trace` });
+  }
+
   // ---- wiring up -----------------------------------------------------------------------
 
   window.addEventListener("load", () => {
@@ -410,6 +431,7 @@
     $("last").onclick = () => showFrame(trace ? trace.frames.length - 1 : 0);
     $("slider").oninput = () => showFrame(Number($("slider").value));
     $("export").onclick = exportSvg;
+    $("exportAnim").onclick = exportAnimation;
     $("fitBtn").onclick = () => {
       userView = false;
       const g = trace && trace.frames.length ? trace.frames[frame] : current() && current().graph;

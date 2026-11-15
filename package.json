@@ -2,7 +2,7 @@
   "name": "mimic",
   "displayName": "Mimic",
   "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run, Test and Debug, the test explorer, the manual, and installing Mimic.",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "publisher": "mimiccodes",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
@@ -200,6 +200,21 @@
           "type": "boolean",
           "default": false,
           "description": "Agents do not run programs or tests (`--no-run`)."
+        },
+        "mimic.format.onSave": {
+          "type": "string",
+          "enum": [
+            "off",
+            "words",
+            "glyphs"
+          ],
+          "default": "off",
+          "enumDescriptions": [
+            "Leave the file as written (format with Shift+Alt+F: it keeps the file's style)",
+            "Format on save, primitives and operators as words (`iota`, `|>`)",
+            "Format on save, primitives and operators as glyphs (`⍳`, `▷`)"
+          ],
+          "description": "Format Mimic files when they are saved (`mimic fmt`), in words or in glyphs."
         }
       }
     },
@@ -754,6 +769,10 @@
         {
           "id": "mimic.where",
           "name": "Where Code Runs"
+        },
+        {
+          "id": "mimic.audit",
+          "name": "Audit"
         }
       ]
     },

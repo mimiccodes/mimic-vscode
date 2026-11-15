@@ -137,7 +137,7 @@ function html(webview) {
     <p id="summary"></p>
     <p id="rules" class="dim"></p>
     <svg id="chart"></svg>
-    <div id="player"><button id="first">⏮</button><button id="prev">◀</button><button id="play">▶</button><button id="next">▶|</button><button id="last">⏭</button><input type="range" id="slider" min="0" max="0" value="0"><span id="roundNo"></span></div>
+    <div id="player"><button id="first">⏮</button><button id="prev">◀</button><button id="play">▶</button><button id="next">▶|</button><button id="last">⏭</button><input type="range" id="slider" min="0" max="0" value="0"><span id="roundNo"></span><button id="exportAnim" title="The rounds as one SVG that plays them">Export as animation</button></div>
     <p id="frameNote" class="dim"></p>
     <p class="dim">Each round fires every redex that is ready, as if each had a core of its own: the bars are the parallelism the net offers. The runtime has as many cores as the machine and runs some calls natively.</p>
   </div>
