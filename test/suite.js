@@ -45,11 +45,12 @@ exports.run = async function () {
 
   // errors as you type
   await editor.edit((e) => e.replace(new vscode.Range(7, 0, 8, 0), "    print(dubble(1))\n"));
-  const diags = await until("diagnostics", () => {
+  // (the half-typed `\i` above was an error of its own for a moment)
+  const diags = await until("the unknown name reported", () => {
     const d = vscode.languages.getDiagnostics(uri);
-    return d.length > 0 ? d : undefined;
+    return d.some((x) => String(x.code) === "E0303") ? d : undefined;
   });
-  assert.equal(String(diags[0].code), "E0303", diags[0].message);
+  assert.ok(diags.find((x) => String(x.code) === "E0303").message.includes("dubble"));
   await vscode.commands.executeCommand("workbench.action.files.revert");
   await until("no diagnostics", () => vscode.languages.getDiagnostics(uri).length === 0);
 };
