@@ -1,0 +1,31 @@
+{
+  "cpu_seconds": 0.0,
+  "functions": [],
+  "gpu": {
+    "bytes": 0,
+    "kernels": 0,
+    "seconds": 0.0
+  },
+  "lost_samples": 0,
+  "memory": {
+    "allocated_bytes": 0,
+    "allocations": 0,
+    "copied_bytes": 0,
+    "copies": 0
+  },
+  "outside_mimic": 0.0,
+  "program": "/Users/harshkumar/projects/harcorp/mimic/editors/vscode/test/workspace/target/profiling/sample",
+  "rate_hz": 691.0,
+  "runtime": [],
+  "samples": 0,
+  "threads": [
+    {
+      "name": "main",
+      "samples": 0,
+      "seen": 1.0,
+      "waiting": 0,
+      "working": 0.0
+    }
+  ],
+  "wall_seconds": 0.001448
+}

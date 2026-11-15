@@ -57,4 +57,24 @@ exports.run = async function () {
   assert.ok(diags.find((x) => String(x.code) === "E0303").message.includes("dubble"));
   await vscode.commands.executeCommand("workbench.action.files.revert");
   await until("no diagnostics", () => vscode.languages.getDiagnostics(uri).length === 0);
+
+  // Profile: a lens above fn main, and a report naming the program's functions
+  const lenses2 = await vscode.commands.executeCommand("vscode.executeCodeLensProvider", uri);
+  assert.ok(lenses2.some((l) => l.command && l.command.title === "Profile"));
+  await vscode.commands.executeCommand("mimic.profile", uri);
+  const report = await until("the profile", () => ext.exports.lastProfile(), 300000);
+  assert.ok(report.samples >= 0 && Array.isArray(report.functions) && report.threads.length >= 1, JSON.stringify(report).slice(0, 400));
+
+  // Where Code Runs: the decisions of the open file
+  await vscode.commands.executeCommand("mimic.refreshWhere");
+  const where = await until("where code runs", () => {
+    const items = ext.exports.whereItems();
+    return items && items.length ? items : undefined;
+  });
+  // (double is pure and calls nothing: compiled to a net leaf; main decides nothing)
+  assert.ok(where.some((i) => i.label === "double" && i.children.length > 0), where.map((i) => i.label).join(", "));
+
+  // the REPL in a terminal
+  await vscode.commands.executeCommand("mimic.openRepl");
+  await until("the REPL terminal", () => vscode.window.terminals.some((t) => t.name === "Mimic REPL"));
 };

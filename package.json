@@ -2,7 +2,7 @@
   "name": "mimic",
   "displayName": "Mimic",
   "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run, Test and Debug, the test explorer, the manual, and installing Mimic.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "mimiccodes",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
@@ -146,6 +146,11 @@
           "type": "boolean",
           "default": true,
           "description": "Once a day, check GitHub for a newer Mimic and a newer version of this extension."
+        },
+        "mimic.profile.showInCode": {
+          "type": "boolean",
+          "default": true,
+          "description": "After a profile, show each function's share of the time at the end of its first line."
         }
       }
     },
@@ -241,6 +246,38 @@
         "command": "mimic.status",
         "title": "Show Mimic Status",
         "category": "Mimic"
+      },
+      {
+        "command": "mimic.profile",
+        "title": "Profile",
+        "category": "Mimic",
+        "icon": "$(flame)"
+      },
+      {
+        "command": "mimic.showProfile",
+        "title": "Show the Last Profile",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.refreshWhere",
+        "title": "Refresh Where Code Runs",
+        "category": "Mimic",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "mimic.openRepl",
+        "title": "Open REPL",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.sendToRepl",
+        "title": "Send Selection to REPL",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.openAt",
+        "title": "Open Location",
+        "category": "Mimic"
       }
     ],
     "keybindings": [
@@ -255,6 +292,11 @@
         "key": "ctrl+alt+m",
         "mac": "cmd+alt+m",
         "when": "editorTextFocus && editorLangId == mimic"
+      },
+      {
+        "command": "mimic.sendToRepl",
+        "key": "shift+enter",
+        "when": "editorTextFocus && editorLangId == mimic && mimic.replOpen"
       }
     ],
     "menus": {
@@ -280,6 +322,24 @@
           "command": "mimic.manualForWord",
           "when": "editorLangId == mimic",
           "group": "navigation@9"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "mimic.profile",
+          "when": "view == mimic.hot",
+          "group": "navigation"
+        },
+        {
+          "command": "mimic.refreshWhere",
+          "when": "view == mimic.where",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "mimic.openAt",
+          "when": "false"
         }
       ]
     },
@@ -414,6 +474,33 @@
             ]
           }
         ]
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "mimic",
+          "title": "Mimic",
+          "icon": "images/activity.svg"
+        }
+      ]
+    },
+    "views": {
+      "mimic": [
+        {
+          "id": "mimic.hot",
+          "name": "Hot Functions"
+        },
+        {
+          "id": "mimic.where",
+          "name": "Where Code Runs"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "mimic.hot",
+        "contents": "Profile a program to see where its time goes.\n[Profile](command:mimic.profile)"
       }
     ]
   },

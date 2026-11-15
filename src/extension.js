@@ -157,6 +157,7 @@ class Lenses {
       if (isMain && MAIN.test(line)) {
         lenses.push(new vscode.CodeLens(range, { title: "▶ Run", command: "mimic.run", arguments: [doc.uri] }));
         lenses.push(new vscode.CodeLens(range, { title: "Debug", command: "mimic.debug", arguments: [doc.uri] }));
+        if (setup.has("profile")) lenses.push(new vscode.CodeLens(range, { title: "Profile", command: "mimic.profile", arguments: [doc.uri] }));
       }
       const t = TEST.exec(line);
       if (t) {
@@ -374,8 +375,11 @@ async function activate(context) {
   // a different mimic (installed, updated, chosen): its language server
   setup.onChange(() => restartServer(context));
   await setup.start(context, output);
+  require("./insight").start(context);
+  require("./repl").start(context);
   // for tests and other extensions: the mimic in use
-  return { mimic: () => setup.found() };
+  const insight = require("./insight");
+  return { mimic: () => setup.found(), lastProfile: insight.lastProfile, whereItems: insight.whereItems };
 }
 
 function deactivate() {

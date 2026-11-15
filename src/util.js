@@ -115,4 +115,24 @@ function due(last, now, every = 24 * 3600 * 1000) {
   return !last || now - last >= every;
 }
 
-module.exports = { newer, MAIN, TEST, testsIn, parseTestOutput, parseVersion, parseCommands, platformTag, assetName, sumFor, checkProblems, due };
+/** Each function's change in share (self) from profile `a` to `b`. */
+function compareProfiles(a, b) {
+  const key = (f) => f.function + (f.part ? `#${f.part}` : "");
+  const before = new Map((a.functions || []).map((f) => [key(f), f.self]));
+  const out = new Map();
+  for (const f of b.functions || []) out.set(key(f), f.self - (before.get(key(f)) || 0));
+  return out;
+}
+
+/** How a share of time is marked in the code. */
+function heatOf(share) {
+  if (share >= 0.25) return { icon: "🔥", color: "#E24B04" };
+  if (share >= 0.05) return { icon: "●", color: "#E8A33D" };
+  return { icon: "○", color: "#888888" };
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
+module.exports = { compareProfiles, heatOf, escapeHtml, newer, MAIN, TEST, testsIn, parseTestOutput, parseVersion, parseCommands, platformTag, assetName, sumFor, checkProblems, due };

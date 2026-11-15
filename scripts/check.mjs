@@ -83,4 +83,8 @@ if (process.platform !== "win32") {
   }
   fs.rmSync(home, { recursive: true, force: true });
 }
+const cmp = u.compareProfiles({ functions: [{ function: "f", self: 0.5 }] }, { functions: [{ function: "f", self: 0.3 }, { function: "g", part: "kernel", self: 0.1 }] });
+assert.ok(Math.abs(cmp.get("f") + 0.2) < 1e-9 && Math.abs(cmp.get("g#kernel") - 0.1) < 1e-9);
+assert.equal(u.heatOf(0.5).icon, "🔥");
+assert.equal(u.escapeHtml("<a href='x'>&"), "&lt;a href=&#39;x&#39;&gt;&amp;");
 console.log(`ok: ${c.commands.length} commands, ${c.languages.length} languages, ${glyphs.length} glyphs`);

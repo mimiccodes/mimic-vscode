@@ -20,12 +20,12 @@ Items marked **(mimic)** also need work in the compiler, in the
 
 | | Item |
 |---|---|
-| · | E33. **Profile** above `fn main` and as a command (`mimic profile --json`) |
-| · | E34. Time beside each function (a heat mark in the gutter) and a hot-functions view |
-| · | E35. A profile panel: functions, cores, CPU and GPU, memory |
-| · | E36. A "where code runs" panel (`mimic why`), click to jump |
-| · | E37. Compare two profiles |
-| · | H46. **Mimic: Open REPL** and **Send Selection to REPL** (Shift+Enter) |
+| ✅ | E33. **Profile** above `fn main` and as a command (`mimic profile --json`) |
+| ✅ | E34. Time beside each function (a heat mark in the gutter) and a hot-functions view |
+| ✅ | E35. A profile panel: functions, cores, CPU and GPU, memory |
+| ✅ | E36. A "where code runs" panel (`mimic why`), click to jump |
+| ✅ | E37. Compare two profiles |
+| ✅ | H46. **Mimic: Open REPL** and **Send Selection to REPL** (Shift+Enter) |
 
 ## Phase 3: seeing interaction nets
 

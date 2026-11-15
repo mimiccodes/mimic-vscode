@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0
+
+Where the time goes, where code runs, and the REPL (with Mimic 0.3.13 or newer).
+
+- **Profile** above `fn main`, and *Mimic: Profile*: runs `mimic profile` and opens a panel with each function's share of the time (self, and with what it calls) next to where the compiler runs it, the runtime functions that took it, a bar per core showing how busy it was, GPU time and memory. Profile again and the panel shows each function's change since the last run.
+- **The share of time in the code**: after a profile, each function's first line ends with its share (🔥 25% and more), with the details on hover (`mimic.profile.showInCode`).
+- **The Mimic side bar**: **Hot Functions** (the last profile, click to jump) and **Where Code Runs** (every decision of `mimic why` for the open file: `∥ parallel`, `⇶ fused`, `≋ SIMD`, `▣ GPU`, … with the reason on hover).
+- **The REPL**: *Mimic: Open REPL* runs `mimic repl` in a terminal; **Shift+Enter** sends the selection, or the current line, to it.
+
 ## 0.4.0
 
 Setup that just works.
