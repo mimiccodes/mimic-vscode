@@ -2,7 +2,7 @@
   "name": "mimic",
   "displayName": "Mimic",
   "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run, Test and Debug, the test explorer, the manual, and installing Mimic.",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "publisher": "mimiccodes",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
@@ -278,6 +278,12 @@
         "command": "mimic.openAt",
         "title": "Open Location",
         "category": "Mimic"
+      },
+      {
+        "command": "mimic.showNet",
+        "title": "Show Interaction Net",
+        "category": "Mimic",
+        "icon": "$(type-hierarchy)"
       }
     ],
     "keybindings": [
@@ -315,6 +321,11 @@
           "command": "mimic.insertGlyph",
           "when": "editorLangId == mimic",
           "group": "navigation@2"
+        },
+        {
+          "command": "mimic.showNet",
+          "when": "editorLangId == mimic-net",
+          "group": "navigation"
         }
       ],
       "editor/context": [

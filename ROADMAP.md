@@ -31,18 +31,18 @@ Items marked **(mimic)** also need work in the compiler, in the
 
 | | Item |
 |---|---|
-| · | N1. `mimic net show --json`: nets as nodes, ports and wires, linked to the source **(mimic)** |
-| · | N2. `mimic net trace --json`: reduction step by step, with the redexes ready at each step **(mimic)** |
-| · | N3. Statistics: interactions, parallelism, what compile-time reduction removed **(mimic)** |
-| · | N4. **Show net** above functions that run as nets, and a preview beside `.mnet` files |
-| · | N5. A graph view: nodes by kind, principal ports, layout, zoom, REFs that fold |
-| · | N6. Node ↔ source |
-| · | N7. Step through a reduction, with the redexes that fire together |
-| · | N8. A parallelism chart: ready redexes per step |
-| · | N9. Before and after compile-time reduction |
-| · | N10. `.mnet` editing: errors, hover on node kinds, formatting **(mimic)** |
-| · | N11. Limits for big nets (sampled traces, said so) |
-| · | N12. Export as SVG, or an animated trace |
+| ✅ | N1. `mimic net show --json`: nets as nodes, ports and wires, linked to the source **(mimic)** |
+| ✅ | N2. `mimic net trace --json`: reduction step by step, with the redexes ready at each step **(mimic)** |
+| ✅ | N3. Statistics: interactions, parallelism, what compile-time reduction removed **(mimic)** |
+| ✅ | N4. **Show net** above functions that run as nets, and a preview beside `.mnet` files |
+| ✅ | N5. A graph view: nodes by kind, principal ports, layout, zoom, REFs that fold |
+| ✅ | N6. Node ↔ source (a node opens its function's code; **Show net** above a function opens its nets) |
+| ✅ | N7. Step through a reduction, with the redexes that fire together |
+| ✅ | N8. A parallelism chart: ready redexes per step |
+| ✅ | N9. Before and after compile-time reduction |
+| ✅ | N10. `.mnet` editing: errors on save, hover on node kinds, formatting |
+| ✅ | N11. Limits for big nets (sampled traces, said so) |
+| ◐ | N12. Export as SVG ✅; an animated trace to come |
 
 ## Phase 4: everything else
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.0
+
+Interaction nets you can see (with a Mimic that has `mimic net show` and `mimic net trace`).
+
+- **Show net** above every function that compiles to an interaction net, and *Mimic: Show Interaction Net* (also for `.mnet` files): its definitions drawn as graphs. Nodes are triangles with the principal port on top (references, numbers and erasers are circles), active pairs are orange, and a reference opens its definition when clicked; any other node opens the function's code. Drag and zoom; **Fit**; the definitions as text.
+- **Before compile-time reduction**: the nets as compiled from the code, and how many nodes the compiler removed.
+- **Trace**: give the arguments and the call is reduced round by round with the runtime's rules: the result, the interactions, the rules that fired, a chart of how many redexes each round had (the parallelism the net offers), and a player that steps through the rounds while the net is small enough to draw.
+- **Export SVG** of the net as drawn.
+- **`.mnet` files**: errors on save, formatting, and what each kind of node is on hover.
+
 ## 0.5.0
 
 Where the time goes, where code runs, and the REPL (with Mimic 0.3.13 or newer).

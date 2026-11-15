@@ -58,7 +58,10 @@ async function locate(setting) {
     const v = await exec(file, ["--version"], { timeout: 15000 });
     if (v.missing || v.code !== 0) return undefined;
     const h = await exec(file, ["--help"], { timeout: 15000 });
-    return { path: file, how, version: parseVersion(v.stdout), commands: parseCommands(h.stdout) };
+    const commands = parseCommands(h.stdout);
+    // `mimic net show` and `trace` came later than `mimic net`
+    const net = commands.has("net") ? parseCommands((await exec(file, ["net", "--help"], { timeout: 15000 })).stdout) : new Set();
+    return { path: file, how, version: parseVersion(v.stdout), commands, net };
   };
   if (setting) return (await probe(setting, "the mimic.path setting")) || { missing: true, tried, setting };
   const onPath = await probe("mimic", "VS Code's PATH");

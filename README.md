@@ -19,6 +19,7 @@ Support for [Mimic](https://github.com/mimiccodes/mimic), the compiled array lan
 * **The manual** beside your code: *Mimic: Open the Manual…*, *Search the Manual…*, or `Cmd+Alt+M` / `Ctrl+Alt+M` for the word under the cursor.
 
 * **Where the time goes**: **Profile** above `fn main` opens a panel with each function's share of the time, where it runs, how busy each core was, GPU time and memory, and the change since the last profile; each function's share also shows in the code. The **Mimic** side bar lists the hot functions and every decision about where the open file's code runs.
+* **Interaction nets you can see**: **Show net** above a function that compiles to an interaction net draws its nets; **Trace** reduces a call round by round, charts the parallelism and plays the rounds. `.mnet` files get errors, formatting and hovers.
 * **The REPL**: *Mimic: Open REPL*, and **Shift+Enter** to send the selection or line to it.
 * **Setup that just works**: the extension finds Mimic as your terminal does, or where its installer puts it; the status bar shows its version and what it can do; *Mimic: Install or Update Mimic* installs the release for your machine from GitHub (checked against its `SHA256SUMS`); a daily check says when a newer Mimic or extension is out.
 

@@ -74,6 +74,15 @@ exports.run = async function () {
   // (double is pure and calls nothing: compiled to a net leaf; main decides nothing)
   assert.ok(where.some((i) => i.label === "double" && i.children.length > 0), where.map((i) => i.label).join(", "));
 
+  // Show net above a function compiled to an interaction net, and the view
+  const netLens = await until("the Show net lens", async () => {
+    const ls = await vscode.commands.executeCommand("vscode.executeCodeLensProvider", uri);
+    return ls.find((l) => l.command && l.command.title.startsWith("Show net"));
+  });
+  assert.equal(netLens.command.arguments[1], "main::double");
+  await vscode.commands.executeCommand("mimic.showNet", uri, "main::double");
+  await until("the net view", () => vscode.window.tabGroups.all.some((g) => g.tabs.some((t) => t.label.startsWith("Net: main.mim"))));
+
   // the REPL in a terminal
   await vscode.commands.executeCommand("mimic.openRepl");
   await until("the REPL terminal", () => vscode.window.terminals.some((t) => t.name === "Mimic REPL"));

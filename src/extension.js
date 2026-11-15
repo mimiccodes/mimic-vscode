@@ -377,6 +377,7 @@ async function activate(context) {
   await setup.start(context, output);
   require("./insight").start(context);
   require("./repl").start(context);
+  require("./netview").start(context);
   // for tests and other extensions: the mimic in use
   const insight = require("./insight");
   return { mimic: () => setup.found(), lastProfile: insight.lastProfile, whereItems: insight.whereItems };
