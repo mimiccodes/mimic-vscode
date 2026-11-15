@@ -1,0 +1,33 @@
+# A tag (v0.3.5) builds the extension, attaches it to a GitHub release, and
+# publishes it to the VS Code Marketplace and Open VSX when their tokens
+# are set as repository secrets (VSCE_PAT, OVSX_PAT).
+name: release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm test
+      - run: npx vsce package --out mimic-${GITHUB_REF_NAME#v}.vsix
+      - run: gh release create "$GITHUB_REF_NAME" mimic-*.vsix --title "$GITHUB_REF_NAME" --notes-file CHANGELOG.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: VS Code Marketplace
+        if: ${{ env.VSCE_PAT != '' }}
+        run: npx vsce publish --packagePath mimic-*.vsix
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - name: Open VSX
+        if: ${{ env.OVSX_PAT != '' }}
+        run: npx --yes ovsx@0.10.6 publish mimic-*.vsix -p "$OVSX_PAT"
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

@@ -1,0 +1,12 @@
+module main
+
+// twice the value
+fn double(x: i64) -> i64 { x × 2 }
+
+fn main() {
+    print(double(21))
+}
+
+test "double" {
+    expect(double(2) == 4)
+}

@@ -1,0 +1,268 @@
+{
+  "name": "mimic",
+  "displayName": "Mimic",
+  "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run and Test, the test explorer and the manual.",
+  "version": "0.3.5",
+  "publisher": "mimiccodes",
+  "license": "Apache-2.0",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#0A0A0A",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mimiccodes/mimic-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/mimiccodes/mimic-vscode/issues"
+  },
+  "homepage": "https://github.com/mimiccodes/mimic",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters",
+    "Testing",
+    "Snippets"
+  ],
+  "keywords": [
+    "mimic",
+    "array",
+    "parallel",
+    "glyphs",
+    "apl"
+  ],
+  "main": "./src/extension.js",
+  "activationEvents": [
+    "workspaceContains:**/mim.mim"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "mimic",
+        "aliases": [
+          "Mimic",
+          "mimic"
+        ],
+        "extensions": [
+          ".mim"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./images/mim-file.svg",
+          "dark": "./images/mim-file.svg"
+        }
+      },
+      {
+        "id": "mimic-net",
+        "aliases": [
+          "Mimic Net",
+          "mimic-net"
+        ],
+        "extensions": [
+          ".mnet"
+        ],
+        "configuration": "./language-configuration-net.json",
+        "icon": {
+          "light": "./images/mim-file.svg",
+          "dark": "./images/mim-file.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mimic",
+        "scopeName": "source.mimic",
+        "path": "./syntaxes/mimic.tmLanguage.json"
+      },
+      {
+        "language": "mimic-net",
+        "scopeName": "source.mimic-net",
+        "path": "./syntaxes/mimic-net.tmLanguage.json"
+      },
+      {
+        "scopeName": "markdown.mimic.codeblock",
+        "path": "./syntaxes/markdown-codeblock.json",
+        "injectTo": [
+          "text.html.markdown"
+        ],
+        "embeddedLanguages": {
+          "meta.embedded.block.mimic": "mimic"
+        }
+      }
+    ],
+    "semanticTokenModifiers": [
+      {
+        "id": "foreign",
+        "description": "A name from C or C++ (c::, cpp::, an `as` name)"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "mimic",
+        "scopes": {
+          "namespace.foreign": [
+            "entity.name.namespace.foreign.mimic"
+          ],
+          "function.foreign": [
+            "support.function.foreign.mimic",
+            "entity.name.function.mimic"
+          ],
+          "type.foreign": [
+            "support.type.foreign.mimic",
+            "entity.name.type.mimic"
+          ]
+        }
+      }
+    ],
+    "configuration": {
+      "title": "Mimic",
+      "properties": {
+        "mimic.path": {
+          "type": "string",
+          "default": "mimic",
+          "markdownDescription": "The `mimic` program: a name on your `PATH`, or a full path."
+        },
+        "mimic.languageServer.enable": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Run `mimic lsp`: errors as you type, hover, go to definition, completion and formatting."
+        },
+        "mimic.checkVersion": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Check that `mimic` is new enough for this extension, and offer the download when it is not."
+        },
+        "mimic.codeLens.enable": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show **Run** above `fn main` and **Run test** above each `test` block."
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[mimic]": {
+        "editor.unicodeHighlight.ambiguousCharacters": false,
+        "editor.unicodeHighlight.nonBasicASCII": false,
+        "editor.wordBasedSuggestions": "off"
+      }
+    },
+    "commands": [
+      {
+        "command": "mimic.insertGlyph",
+        "title": "Insert Glyph…",
+        "category": "Mimic",
+        "icon": "$(symbol-operator)"
+      },
+      {
+        "command": "mimic.run",
+        "title": "Run",
+        "category": "Mimic",
+        "icon": "$(play)"
+      },
+      {
+        "command": "mimic.test",
+        "title": "Run Tests",
+        "category": "Mimic",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "mimic.check",
+        "title": "Check",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.openManual",
+        "title": "Open the Manual…",
+        "category": "Mimic",
+        "icon": "$(book)"
+      },
+      {
+        "command": "mimic.manualForWord",
+        "title": "Manual for the Word under the Cursor",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.searchManual",
+        "title": "Search the Manual…",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.toGlyphs",
+        "title": "Convert File to Glyphs",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.toWords",
+        "title": "Convert File to Words",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.restartServer",
+        "title": "Restart the Language Server",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.showOutput",
+        "title": "Show the Language Server's Output",
+        "category": "Mimic"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "mimic.insertGlyph",
+        "key": "ctrl+alt+g",
+        "mac": "cmd+alt+g",
+        "when": "editorTextFocus && editorLangId == mimic"
+      },
+      {
+        "command": "mimic.manualForWord",
+        "key": "ctrl+alt+m",
+        "mac": "cmd+alt+m",
+        "when": "editorTextFocus && editorLangId == mimic"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "mimic.run",
+          "when": "editorLangId == mimic",
+          "group": "navigation@1"
+        },
+        {
+          "command": "mimic.insertGlyph",
+          "when": "editorLangId == mimic",
+          "group": "navigation@2"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "mimic.manualForWord",
+          "when": "editorLangId == mimic",
+          "group": "navigation@9"
+        }
+      ]
+    },
+    "snippets": [
+      {
+        "language": "mimic",
+        "path": "./snippets/mimic.json"
+      }
+    ]
+  },
+  "scripts": {
+    "sync": "node scripts/sync.mjs",
+    "test": "node scripts/check.mjs",
+    "package": "vsce package",
+    "test:integration": "node test/integration.mjs"
+  },
+  "dependencies": {
+    "vscode-languageclient": "9.0.1"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "3.6.2",
+    "@vscode/test-electron": "2.5.2"
+  }
+}

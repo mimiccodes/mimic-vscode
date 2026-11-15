@@ -1,0 +1,470 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Mimic",
+  "scopeName": "source.mimic",
+  "fileTypes": [
+    "mim"
+  ],
+  "patterns": [
+    {
+      "include": "#statement"
+    }
+  ],
+  "repository": {
+    "statement": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#test"
+        },
+        {
+          "include": "#extern"
+        },
+        {
+          "include": "#declaration"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#raw-string"
+        },
+        {
+          "include": "#number"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "include": "#namespace"
+        },
+        {
+          "include": "#type"
+        },
+        {
+          "include": "#builtin"
+        },
+        {
+          "include": "#call"
+        },
+        {
+          "include": "#glyph"
+        },
+        {
+          "include": "#digraph"
+        },
+        {
+          "include": "#operator"
+        },
+        {
+          "include": "#punctuation"
+        },
+        {
+          "include": "#identifier"
+        }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.mimic",
+          "begin": "//",
+          "end": "$",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.mimic"
+            }
+          },
+          "patterns": [
+            {
+              "name": "meta.example.mimic",
+              "match": "(?<=//)\\s>\\s.*$"
+            }
+          ]
+        },
+        {
+          "name": "comment.line.lamp.mimic",
+          "begin": "⍝",
+          "end": "$",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.mimic"
+            }
+          }
+        }
+      ]
+    },
+    "test": {
+      "match": "\\b(test)\\b(?=\\s*\")",
+      "captures": {
+        "1": {
+          "name": "keyword.other.test.mimic"
+        }
+      }
+    },
+    "extern": {
+      "name": "meta.extern.mimic",
+      "begin": "\\b(extern)\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.modifier.extern.mimic"
+        }
+      },
+      "end": "(?=\\{)|$",
+      "patterns": [
+        {
+          "include": "#string"
+        },
+        {
+          "match": "\\b(pure|concurrent|ordered|sync)\\b",
+          "name": "storage.modifier.effect.mimic"
+        },
+        {
+          "match": "\\b(include)\\b",
+          "name": "keyword.other.include.mimic"
+        },
+        {
+          "match": "\\b(as)\\s+([a-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": {
+              "name": "keyword.other.as.mimic"
+            },
+            "2": {
+              "name": "entity.name.namespace.foreign.mimic"
+            }
+          }
+        },
+        {
+          "match": "\\b(fn)\\b",
+          "name": "storage.type.function.mimic"
+        }
+      ]
+    },
+    "declaration": {
+      "patterns": [
+        {
+          "match": "(?:\\b(fn)\\b|(ƒ))\\s*([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": {
+              "name": "storage.type.function.mimic"
+            },
+            "2": {
+              "name": "storage.type.function.mimic"
+            },
+            "3": {
+              "name": "entity.name.function.mimic"
+            }
+          }
+        },
+        {
+          "match": "(?:\\b(module)\\b|(§))\\s*([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": {
+              "name": "storage.type.module.mimic"
+            },
+            "2": {
+              "name": "storage.type.module.mimic"
+            },
+            "3": {
+              "name": "entity.name.namespace.mimic"
+            }
+          }
+        },
+        {
+          "match": "\\b(type)\\s+([A-Z][A-Za-z0-9_]*)",
+          "captures": {
+            "1": {
+              "name": "storage.type.type.mimic"
+            },
+            "2": {
+              "name": "entity.name.type.mimic"
+            }
+          }
+        },
+        {
+          "match": "\\b(let)\\s+(?:(mut)\\s+)?([a-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": {
+              "name": "storage.type.let.mimic"
+            },
+            "2": {
+              "name": "storage.modifier.mut.mimic"
+            },
+            "3": {
+              "name": "variable.other.declaration.mimic"
+            }
+          }
+        }
+      ]
+    },
+    "string": {
+      "name": "string.quoted.double.mimic",
+      "begin": "\"",
+      "end": "\"",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.mimic"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.end.mimic"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.mimic",
+          "match": "\\\\(?:[ntr0\\\\\"{}]|x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]{1,6}\\})"
+        },
+        {
+          "name": "invalid.illegal.escape.mimic",
+          "match": "\\\\."
+        },
+        {
+          "name": "meta.interpolation.mimic",
+          "begin": "\\{",
+          "end": "\\}",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.interpolation.begin.mimic"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.interpolation.end.mimic"
+            }
+          },
+          "contentName": "source.mimic",
+          "patterns": [
+            {
+              "match": ":(?=[^{}:\"]*\\})([^{}\"]*)",
+              "captures": {
+                "1": {
+                  "name": "constant.other.format.mimic"
+                }
+              }
+            },
+            {
+              "include": "#statement"
+            }
+          ]
+        }
+      ]
+    },
+    "raw-string": {
+      "name": "string.quoted.single.raw.mimic",
+      "begin": "'",
+      "end": "'",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.mimic"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.end.mimic"
+        }
+      }
+    },
+    "number": {
+      "patterns": [
+        {
+          "name": "constant.numeric.duration.mimic",
+          "match": "¯?\\b\\d[\\d_]*(?:\\.\\d[\\d_]*)?(?:ns|us|ms|s|min|h)\\b"
+        },
+        {
+          "name": "constant.numeric.hex.mimic",
+          "match": "¯?\\b0x[0-9A-Fa-f_]+\\b"
+        },
+        {
+          "name": "constant.numeric.binary.mimic",
+          "match": "¯?\\b0b[01_]+\\b"
+        },
+        {
+          "name": "constant.numeric.octal.mimic",
+          "match": "¯?\\b0o[0-7_]+\\b"
+        },
+        {
+          "name": "constant.numeric.float.mimic",
+          "match": "¯?\\b\\d[\\d_]*(?:\\.\\d[\\d_]*(?:[eE][-+]?\\d+)?|[eE][-+]?\\d+)\\b"
+        },
+        {
+          "name": "constant.numeric.integer.mimic",
+          "match": "¯?\\b\\d[\\d_]*\\b"
+        }
+      ]
+    },
+    "keyword": {
+      "patterns": [
+        {
+          "name": "keyword.control.mimic",
+          "match": "\\b(if|else|match|return|arms|with)\\b"
+        },
+        {
+          "name": "keyword.control.mimic",
+          "match": "⋔"
+        },
+        {
+          "name": "storage.modifier.mimic",
+          "match": "\\b(pub|mut|unsafe|trusted)\\b"
+        },
+        {
+          "name": "keyword.other.mimic",
+          "match": "§|ƒ"
+        },
+        {
+          "name": "keyword.other.mimic",
+          "match": "\\b(use|as|module|fn|let|type|extern)\\b"
+        },
+        {
+          "name": "keyword.operator.word.mimic",
+          "match": "\\b(and|or|not|div)\\b"
+        },
+        {
+          "name": "constant.language.boolean.mimic",
+          "match": "\\b(true|false)\\b"
+        }
+      ]
+    },
+    "namespace": {
+      "patterns": [
+        {
+          "match": "\\b(c|cpp)(::)",
+          "captures": {
+            "1": {
+              "name": "entity.name.namespace.foreign.mimic"
+            },
+            "2": {
+              "name": "punctuation.separator.namespace.mimic"
+            }
+          }
+        },
+        {
+          "match": "\\b([a-z_][A-Za-z0-9_]*)(::)",
+          "captures": {
+            "1": {
+              "name": "entity.name.namespace.mimic"
+            },
+            "2": {
+              "name": "punctuation.separator.namespace.mimic"
+            }
+          }
+        }
+      ]
+    },
+    "type": {
+      "patterns": [
+        {
+          "name": "support.type.primitive.mimic",
+          "match": "\\b(i8|i16|i32|i64|u8|u16|u32|u64|isize|usize|f32|f64|bool|char|str|any|c_char|cstr|cptr|fnref|ptr)\\b"
+        },
+        {
+          "name": "entity.name.type.mimic",
+          "match": "\\b[A-Z][A-Za-z0-9_]*\\b"
+        }
+      ]
+    },
+    "builtin": {
+      "name": "support.function.primitive.mimic",
+      "match": "\\b(iota|shape|reverse|sum|product|maximum|minimum|len|print|take|drop|keep|each|range|max|min|abs|gather|trail|evolve|settle|reshape|transpose|matmul)\\b"
+    },
+    "call": {
+      "match": "\\b([a-z_][A-Za-z0-9_]*)\\s*(?=\\(|\\[[A-Z])",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.call.mimic"
+        }
+      }
+    },
+    "glyph": {
+      "patterns": [
+        {
+          "name": "keyword.operator.primitive.mimic",
+          "match": "\\+/|×/|\\*/|⌈/|⌊/|⍳|⍴|⌽|≢|⎕|↑|↓|⌿|¨|‥|⌈|⌊|∣|∕|⍀|⍣|⍥|⥊|⍉|⊠"
+        },
+        {
+          "name": "keyword.operator.pipeline.mimic",
+          "match": "▷|\\|>"
+        },
+        {
+          "name": "keyword.operator.arrow.mimic",
+          "match": "→|⇒|->|=>"
+        },
+        {
+          "name": "keyword.operator.assignment.mimic",
+          "match": "←|↩"
+        },
+        {
+          "name": "keyword.operator.mimic",
+          "match": "×|÷|⫽|≠|≤|≥|∧|∨|¬"
+        },
+        {
+          "name": "constant.numeric.sign.mimic",
+          "match": "¯"
+        }
+      ]
+    },
+    "digraph": {
+      "name": "keyword.operator.digraph.mimic",
+      "match": "\\\\[A-Za-z^#.&|!_<>=/%]"
+    },
+    "operator": {
+      "patterns": [
+        {
+          "name": "keyword.operator.comparison.mimic",
+          "match": "==|!=|<=|>=|<|>"
+        },
+        {
+          "name": "keyword.operator.bitwise.mimic",
+          "match": ">>>|<<|>>|&|\\^|~"
+        },
+        {
+          "name": "keyword.operator.arithmetic.mimic",
+          "match": "\\+|-|\\*|/|%"
+        },
+        {
+          "name": "keyword.operator.assignment.mimic",
+          "match": "="
+        },
+        {
+          "name": "keyword.operator.rest.mimic",
+          "match": "\\.\\."
+        },
+        {
+          "name": "keyword.operator.or.mimic",
+          "match": "\\|"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.separator.comma.mimic",
+          "match": ","
+        },
+        {
+          "name": "punctuation.separator.colon.mimic",
+          "match": ":"
+        },
+        {
+          "name": "punctuation.terminator.mimic",
+          "match": ";"
+        },
+        {
+          "name": "punctuation.accessor.mimic",
+          "match": "\\."
+        },
+        {
+          "name": "punctuation.brackets.mimic",
+          "match": "[()\\[\\]{}]"
+        }
+      ]
+    },
+    "identifier": {
+      "name": "variable.other.mimic",
+      "match": "\\b[a-z_][A-Za-z0-9_]*\\b"
+    }
+  }
+}

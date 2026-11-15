@@ -1,0 +1,303 @@
+[
+  {
+    "glyph": "⍳",
+    "word": "iota",
+    "digraph": "\\i",
+    "kind": "primitive",
+    "doc": "⍳ n → [0 1 … n-1]"
+  },
+  {
+    "glyph": "⍴",
+    "word": "shape",
+    "digraph": "\\r",
+    "kind": "primitive",
+    "doc": "shape of an array ([] for scalars)"
+  },
+  {
+    "glyph": "⌽",
+    "word": "reverse",
+    "digraph": "\\o",
+    "kind": "primitive",
+    "doc": "reverse a vector"
+  },
+  {
+    "glyph": "+/",
+    "word": "sum",
+    "digraph": null,
+    "kind": "primitive",
+    "doc": "sum reduction"
+  },
+  {
+    "glyph": "×/",
+    "word": "product",
+    "digraph": null,
+    "kind": "primitive",
+    "doc": "product reduction"
+  },
+  {
+    "glyph": "⌈/",
+    "word": "maximum",
+    "digraph": "\\M",
+    "kind": "primitive",
+    "doc": "maximum reduction"
+  },
+  {
+    "glyph": "⌊/",
+    "word": "minimum",
+    "digraph": "\\m",
+    "kind": "primitive",
+    "doc": "minimum reduction"
+  },
+  {
+    "glyph": "≢",
+    "word": "len",
+    "digraph": "\\#",
+    "kind": "primitive",
+    "doc": "length (tally) of the leading axis"
+  },
+  {
+    "glyph": "⎕",
+    "word": "print",
+    "digraph": "\\p",
+    "kind": "primitive",
+    "doc": "print a value followed by a newline"
+  },
+  {
+    "glyph": "↑",
+    "word": "take",
+    "digraph": "\\^",
+    "kind": "primitive",
+    "doc": "xs ↑ n → first n (last n if n<0)"
+  },
+  {
+    "glyph": "↓",
+    "word": "drop",
+    "digraph": "\\v",
+    "kind": "primitive",
+    "doc": "xs ↓ n → drop first n (last n if n<0)"
+  },
+  {
+    "glyph": "⌿",
+    "word": "keep",
+    "digraph": "\\k",
+    "kind": "primitive",
+    "doc": "xs ⌿ counts → replicate/filter by mask"
+  },
+  {
+    "glyph": "¨",
+    "word": "each",
+    "digraph": "\\e",
+    "kind": "primitive",
+    "doc": "xs ¨ f → apply f to every element"
+  },
+  {
+    "glyph": "‥",
+    "word": "range",
+    "digraph": "\\.",
+    "kind": "primitive",
+    "doc": "lo ‥ hi → [lo lo+1 … hi-1]"
+  },
+  {
+    "glyph": "⌈",
+    "word": "max",
+    "digraph": "\\u",
+    "kind": "primitive",
+    "doc": "a ⌈ b → larger of a and b (elementwise)"
+  },
+  {
+    "glyph": "⌊",
+    "word": "min",
+    "digraph": "\\d",
+    "kind": "primitive",
+    "doc": "a ⌊ b → smaller of a and b (elementwise)"
+  },
+  {
+    "glyph": "∣",
+    "word": "abs",
+    "digraph": "\\a",
+    "kind": "primitive",
+    "doc": "∣ x → absolute value (elementwise)"
+  },
+  {
+    "glyph": "∕",
+    "word": "gather",
+    "digraph": "\\g",
+    "kind": "primitive",
+    "doc": "xs ▷ gather(f) → combine everything with f (parallel tree; f associative)"
+  },
+  {
+    "glyph": "⍀",
+    "word": "trail",
+    "digraph": "\\t",
+    "kind": "primitive",
+    "doc": "xs ▷ trail(f) → running results of f (parallel prefix; f associative)"
+  },
+  {
+    "glyph": "⍣",
+    "word": "evolve",
+    "digraph": "\\P",
+    "kind": "primitive",
+    "doc": "x ▷ evolve(n, f) → apply f to the state n times"
+  },
+  {
+    "glyph": "⍥",
+    "word": "settle",
+    "digraph": "\\s",
+    "kind": "primitive",
+    "doc": "x ▷ settle(f, done) → apply f until done(x) holds"
+  },
+  {
+    "glyph": "⥊",
+    "word": "reshape",
+    "digraph": "\\R",
+    "kind": "primitive",
+    "doc": "xs ⥊ [2 3] → the elements of xs as a 2×3 matrix (repeated to fill)"
+  },
+  {
+    "glyph": "⍉",
+    "word": "transpose",
+    "digraph": "\\T",
+    "kind": "primitive",
+    "doc": "⍉ m → rows become columns (reverses the axes)"
+  },
+  {
+    "glyph": "⊠",
+    "word": "matmul",
+    "digraph": "\\X",
+    "kind": "primitive",
+    "doc": "a ⊠ b → matrix product (vectors act as a row or a column)"
+  },
+  {
+    "glyph": "§",
+    "word": "module",
+    "digraph": "\\S",
+    "kind": "syntax",
+    "doc": "module declaration"
+  },
+  {
+    "glyph": "ƒ",
+    "word": "fn",
+    "digraph": "\\f",
+    "kind": "syntax",
+    "doc": "function declaration"
+  },
+  {
+    "glyph": "←",
+    "word": "let … =",
+    "digraph": "\\<",
+    "kind": "syntax",
+    "doc": "x ← 5  ≡  let x = 5"
+  },
+  {
+    "glyph": "↩",
+    "word": "=",
+    "digraph": "\\=",
+    "kind": "syntax",
+    "doc": "x ↩ x + 1  (reassign a mut binding)"
+  },
+  {
+    "glyph": "▷",
+    "word": "|>",
+    "digraph": "\\>",
+    "kind": "syntax",
+    "doc": "left-to-right pipeline"
+  },
+  {
+    "glyph": "→",
+    "word": "->",
+    "digraph": null,
+    "kind": "syntax",
+    "doc": "return type"
+  },
+  {
+    "glyph": "⇒",
+    "word": "=>",
+    "digraph": null,
+    "kind": "syntax",
+    "doc": "lambda arrow"
+  },
+  {
+    "glyph": "×",
+    "word": "*",
+    "digraph": "\\x",
+    "kind": "syntax",
+    "doc": "multiply"
+  },
+  {
+    "glyph": "÷",
+    "word": "/",
+    "digraph": "\\/",
+    "kind": "syntax",
+    "doc": "divide (always f64)"
+  },
+  {
+    "glyph": "⫽",
+    "word": "div",
+    "digraph": "\\%",
+    "kind": "syntax",
+    "doc": "integer division, floored (7 div 2 = 3, ¯7 div 2 = ¯4)"
+  },
+  {
+    "glyph": "≠",
+    "word": "!=",
+    "digraph": null,
+    "kind": "syntax",
+    "doc": "not equal"
+  },
+  {
+    "glyph": "≤",
+    "word": "<=",
+    "digraph": null,
+    "kind": "syntax",
+    "doc": "less or equal"
+  },
+  {
+    "glyph": "≥",
+    "word": ">=",
+    "digraph": null,
+    "kind": "syntax",
+    "doc": "greater or equal"
+  },
+  {
+    "glyph": "∧",
+    "word": "and",
+    "digraph": "\\&",
+    "kind": "syntax",
+    "doc": "logical and (elementwise)"
+  },
+  {
+    "glyph": "∨",
+    "word": "or",
+    "digraph": "\\|",
+    "kind": "syntax",
+    "doc": "logical or (elementwise)"
+  },
+  {
+    "glyph": "¬",
+    "word": "not",
+    "digraph": "\\!",
+    "kind": "syntax",
+    "doc": "logical not (elementwise)"
+  },
+  {
+    "glyph": "¯",
+    "word": "-",
+    "digraph": "\\_",
+    "kind": "syntax",
+    "doc": "high minus for negative literals: ¯3"
+  },
+  {
+    "glyph": "⍝",
+    "word": "//",
+    "digraph": null,
+    "kind": "syntax",
+    "doc": "line comment"
+  },
+  {
+    "glyph": "⋔",
+    "word": "arms",
+    "digraph": "\\y",
+    "kind": "syntax",
+    "doc": "arms (a = …) { … arm(x) … arm(y) }: parallel divide and conquer"
+  }
+]

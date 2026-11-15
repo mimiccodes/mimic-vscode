@@ -1,0 +1,32 @@
+{
+  "Program": {
+    "prefix": "main",
+    "body": ["module main", "", "fn main() {", "    $0", "}"],
+    "description": "A program: module main and fn main"
+  },
+  "Function": {
+    "prefix": "fn",
+    "body": ["fn ${1:name}(${2:x}: ${3:i64}) -> ${4:i64} {", "    $0", "}"],
+    "description": "A function"
+  },
+  "Test": {
+    "prefix": "test",
+    "body": ["test \"${1:what it checks}\" {", "    expect(${2:actual} == ${3:expected})", "}"],
+    "description": "A test block, run by mimic test"
+  },
+  "Record type": {
+    "prefix": "type",
+    "body": ["type ${1:Name} = { ${2:field}: ${3:str} }"],
+    "description": "A record type"
+  },
+  "Match": {
+    "prefix": "match",
+    "body": ["match ${1:value} {", "    ${2:Some(x)} => ${3:x},", "    ${4:_} => ${5:0},", "}"],
+    "description": "Pattern matching"
+  },
+  "Doc example": {
+    "prefix": "example",
+    "body": ["// > ${1:expression}", "// ${2:value}"],
+    "description": "An example in a comment, run as a test by mimic test"
+  }
+}

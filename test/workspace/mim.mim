@@ -1,0 +1,7 @@
+module mim
+
+project {
+    name = "sample"
+    version = "0.1.0"
+    kind = [bin]
+}

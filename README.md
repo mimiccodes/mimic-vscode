@@ -1,20 +1,38 @@
+![Mimic](images/banner.png)
+
 # Mimic for Visual Studio Code
 
-Support for [Mimic](https://github.com/mimiccodes/mimic), the array language that is parallel by default.
+**Everything that can run in parallel will run in parallel.**
 
-Planned features:
+Support for [Mimic](https://github.com/mimiccodes/mimic), the compiled array language that is parallel by default. The language features come from `mimic lsp`, the compiler's own analysis, so the editor always agrees with `mimic build`.
 
-* Highlighting for `.mim` and `.mnet` files, from [mimic-syntax](https://github.com/mimiccodes/mimic-syntax).
-* Errors as you type, quick fixes, formatting, hover, go to definition and find references, through `mimic lsp`.
-* Glyph input (`\i` becomes `⍳`) and a glyph palette that shows each glyph's word and meaning.
-* Run and Test above functions and tests, and the test explorer.
-* Debugging, with lists and records shown as values.
-* The Mimic manual in a side panel.
-* Labels showing where code runs: in parallel, on the GPU, as a task.
+## Features
 
-The extension needs `mimic` on your `PATH`; it checks the version and offers to update it. Download Mimic from the [releases](https://github.com/mimiccodes/mimic/releases).
+* **Highlighting** for `.mim` and `.mnet` files: every glyph and its word, strings with interpolation, durations, the high minus; names from C (`c::sqrt`) in their own colour.
+* **Errors as you type**, with quick fixes from the compiler.
+* **Hover**: signatures, comments and effects (`pure`, `concurrent`, …); for a C function, the header it came from; for a glyph, what it does and how to type it.
+* **Go to definition and find references**, into the standard library too.
+* **Glyph input**: type `\i` and pick `⍳`. Or open the **glyph palette** (`Cmd+Alt+G` on macOS, `Ctrl+Alt+G` elsewhere), which lists every glyph with its word and meaning.
+* **Completion** of names, modules (`fs::`), words and keywords; **formatting** (`mimic fmt`) that keeps your file's style, words or glyphs; **Convert File to Glyphs / Words**.
+* **Run and test**: **▶ Run** above `fn main`, **▶ Run test** above every `test` block, and the **Test Explorer** for `test` blocks and examples in comments (`// > expression`), with both sides of a failed `expect`.
+* **The manual** beside your code: *Mimic: Open the Manual…*, *Search the Manual…*, or `Cmd+Alt+M` / `Ctrl+Alt+M` for the word under the cursor.
 
-The `mimic` repository includes this one as a submodule (`editors/vscode`), so the two are developed side by side.
+## Requirements
+
+`mimic` 0.3.4 or newer, on your `PATH` (or set `mimic.path`). Download it from the [releases](https://github.com/mimiccodes/mimic/releases); the extension offers the download when `mimic` is missing or too old.
+
+## Settings
+
+| Setting | Default | |
+|---|---|---|
+| `mimic.path` | `mimic` | The `mimic` program |
+| `mimic.languageServer.enable` | `true` | Run `mimic lsp` |
+| `mimic.codeLens.enable` | `true` | **Run** and **Run test** above functions and tests |
+| `mimic.checkVersion` | `true` | Check that `mimic` is new enough |
+
+## Development
+
+This repository is a submodule of [mimic](https://github.com/mimiccodes/mimic) (`editors/vscode`), developed together with the compiler. `npm run sync` copies the grammars from `editors/syntax` and the glyph table from the compiler; `npm test` checks the extension; `npm run package` builds the `.vsix`.
 
 ## Licence
 

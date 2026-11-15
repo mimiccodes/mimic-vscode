@@ -1,0 +1,7 @@
+.github/**
+scripts/**
+node_modules/@vscode/vsce/**
+**/*.vsix
+.gitignore
+test/**
+.vscode-test/**
