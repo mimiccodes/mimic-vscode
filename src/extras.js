@@ -48,8 +48,9 @@ function insideString(before) {
 let replacing = false;
 async function glyphAsYouType(e) {
   if (replacing || e.document.languageId !== "mimic" || !config().get("glyphInput")) return;
-  const ed = vscode.window.activeTextEditor;
-  if (!ed || ed.document !== e.document || e.contentChanges.length !== 1) return;
+  // (typed: one change of one character; the document need not be the
+  // active editor's, a webview may have the focus)
+  if (e.contentChanges.length !== 1) return;
   const ch = e.contentChanges[0];
   if (ch.text.length !== 1) return;
   const at = ch.range.start.translate(0, 1);
@@ -60,7 +61,14 @@ async function glyphAsYouType(e) {
   if (!g || insideString(line.slice(0, at.character - 2))) return;
   replacing = true;
   try {
-    await ed.edit((b) => b.replace(new vscode.Range(at.line, at.character - 2, at.line, at.character), g), { undoStopBefore: false, undoStopAfter: true });
+    const ed = vscode.window.visibleTextEditors.find((x) => x.document === e.document);
+    const range = new vscode.Range(at.line, at.character - 2, at.line, at.character);
+    if (ed) await ed.edit((b) => b.replace(range, g), { undoStopBefore: false, undoStopAfter: true });
+    else {
+      const we = new vscode.WorkspaceEdit();
+      we.replace(e.document.uri, range, g);
+      await vscode.workspace.applyEdit(we);
+    }
   } finally {
     replacing = false;
   }

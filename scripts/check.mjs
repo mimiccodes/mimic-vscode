@@ -87,4 +87,11 @@ const cmp = u.compareProfiles({ functions: [{ function: "f", self: 0.5 }] }, { f
 assert.ok(Math.abs(cmp.get("f") + 0.2) < 1e-9 && Math.abs(cmp.get("g#kernel") - 0.1) < 1e-9);
 assert.equal(u.heatOf(0.5).icon, "🔥");
 assert.equal(u.escapeHtml("<a href='x'>&"), "&lt;a href=&#39;x&#39;&gt;&amp;");
+const ff = u.failureFacts(["line 16: expect(x < 100)", "left:  100", "line 15: the property fails; the smallest failing case: x = 100"]);
+assert.deepEqual(ff.at.map((x) => x.line), [16, 15]);
+assert.equal(ff.counterexample, "x = 100");
+assert.equal(u.failureFacts(["mimic panic: contract broken: `half` requires x >= 0 (line 4), and the call broke it"]).at[0].line, 4);
+assert.deepEqual(u.splitValues('x = 1, ys = [1 2], s = "a, b"'), ["x = 1", "ys = [1 2]", 's = "a, b"']);
+const cat = u.caseAsTest(['test "small" for x: i64 {', "    expect(x < 100)", "}"], 0, "x = 100");
+assert.deepEqual(cat, { line: 2, text: '\ntest "small: x = 100" {\n    let x = 100\n    expect(x < 100)\n}' });
 console.log(`ok: ${c.commands.length} commands, ${c.languages.length} languages, ${glyphs.length} glyphs`);

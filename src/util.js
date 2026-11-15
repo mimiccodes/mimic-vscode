@@ -135,4 +135,67 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
 
-module.exports = { compareProfiles, heatOf, escapeHtml, newer, MAIN, TEST, testsIn, parseTestOutput, parseVersion, parseCommands, platformTag, assetName, sumFor, checkProblems, due };
+/**
+ * What a failed test's lines say: the lines they point at (`line 16: …`,
+ * a broken contract's `(line 4)`), and a property's smallest failing case
+ * (`x = 100`).
+ */
+function failureFacts(detail) {
+  const at = [];
+  let counterexample;
+  for (const l of detail || []) {
+    const m = /^\s*line (\d+): (.*)$/.exec(l);
+    if (m) at.push({ line: Number(m[1]), text: m[2] });
+    const c = /\(line (\d+)\)/.exec(l);
+    if (c && /contract/.test(l)) at.push({ line: Number(c[1]), text: l.replace(/^\s*mimic panic:\s*/, "") });
+    const k = /smallest failing case: (.*)$/.exec(l);
+    if (k) counterexample = k[1].trim();
+  }
+  return { at, counterexample };
+}
+
+/** Split `x = 1, ys = [1 2], s = "a, b"` at the commas between values. */
+function splitValues(text) {
+  const out = [];
+  let depth = 0, inside = false, start = 0;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"' && text[i - 1] !== "\\") inside = !inside;
+    else if (!inside && "([{".includes(c)) depth++;
+    else if (!inside && ")]}".includes(c)) depth--;
+    else if (!inside && depth === 0 && c === ",") {
+      out.push(text.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  if (text.slice(start).trim()) out.push(text.slice(start).trim());
+  return out;
+}
+
+/**
+ * A property test's failing case as a test of its own: the property's body
+ * with its variables bound to the case. `lines` is the file, `at` the line
+ * of `test "…" for …`. Returns { line: where to insert, text } or undefined.
+ */
+function caseAsTest(lines, at, counterexample) {
+  const head = /^(\s*)test\s+"((?:[^"\\]|\\.)*)"\s+for\s+.*\{\s*$/.exec(lines[at] || "");
+  if (!head) return undefined;
+  const indent = head[1];
+  let depth = 0, end = -1;
+  for (let i = at; i < lines.length && end < 0; i++) {
+    for (const c of lines[i]) {
+      if (c === "{") depth++;
+      else if (c === "}" && --depth === 0) {
+        end = i;
+        break;
+      }
+    }
+  }
+  if (end < 0) return undefined;
+  const body = lines.slice(at + 1, end);
+  const lets = splitValues(counterexample).map((v) => `${indent}    let ${v.replace(/\s*=\s*/, " = ")}`);
+  const text = [``, `${indent}test "${head[2]}: ${counterexample.replace(/"/g, "'")}" {`, ...lets, ...body, `${indent}}`].join("\n");
+  return { line: end, text };
+}
+
+module.exports = { failureFacts, splitValues, caseAsTest, compareProfiles, heatOf, escapeHtml, newer, MAIN, TEST, testsIn, parseTestOutput, parseVersion, parseCommands, platformTag, assetName, sumFor, checkProblems, due };

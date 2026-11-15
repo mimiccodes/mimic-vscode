@@ -9,7 +9,10 @@ const path = require("path");
 const fs = require("fs");
 const { LanguageClient } = require("vscode-languageclient/node");
 const GLYPHS = require("./glyphs.json");
-const { MAIN, TEST, testsIn, parseTestOutput } = require("./util");
+const { MAIN, TEST, testsIn, parseTestOutput, failureFacts, caseAsTest } = require("./util");
+
+/** A property's smallest failing case, by test (file and line). */
+const failingCases = new Map();
 const setup = require("./setup");
 const { exec } = require("./mimic");
 
@@ -146,7 +149,26 @@ async function test(uri, name) {
   runInTerminal(args, file);
 }
 
+const lensesChanged = new vscode.EventEmitter();
+
+/** A property's failing case, written as a test of its own after it. */
+async function keepCase(uri, line) {
+  const doc = await vscode.workspace.openTextDocument(uri);
+  const c = failingCases.get(`${uri.fsPath}#${line}`);
+  if (!c) return;
+  const t = caseAsTest(doc.getText().split(/\r?\n/), line, c);
+  if (!t) return vscode.window.showWarningMessage("Could not find the property test's block.");
+  const ed = new vscode.WorkspaceEdit();
+  ed.insert(uri, new vscode.Position(t.line, doc.lineAt(t.line).text.length), t.text);
+  await vscode.workspace.applyEdit(ed);
+  failingCases.delete(`${uri.fsPath}#${line}`);
+  lensesChanged.fire();
+}
+
 class Lenses {
+  constructor() {
+    this.onDidChangeCodeLenses = lensesChanged.event;
+  }
   provideCodeLenses(doc) {
     if (!config().get("codeLens.enable")) return [];
     const lenses = [];
@@ -162,6 +184,8 @@ class Lenses {
       const t = TEST.exec(line);
       if (t) {
         lenses.push(new vscode.CodeLens(range, { title: "▶ Run test", command: "mimic.test", arguments: [doc.uri, t[1]] }));
+        const c = failingCases.get(`${doc.uri.fsPath}#${i}`);
+        if (c) lenses.push(new vscode.CodeLens(range, { title: `✗ fails for ${c}: keep it as a test`, command: "mimic.keepCase", arguments: [doc.uri, i] }));
       }
     }
     return lenses;
@@ -206,7 +230,9 @@ function setUpTests(context) {
     vscode.workspace.onDidOpenTextDocument((d) => d.languageId === "mimic" && refresh(d.uri, d.getText())),
   );
 
-  const runHandler = async (request, token) => {
+  // coverage of the last run, by file: [line, count] pairs
+  const coverageLines = new Map();
+  const runHandler = async (request, token, withCoverage) => {
     const run = ctrl.createTestRun(request);
     const chosen = [];
     const add = (item) => {
@@ -228,6 +254,7 @@ function setUpTests(context) {
       items.forEach((t) => run.started(t));
       const root = projectRoot(file);
       const args = root ? ["test", ...items.map((t) => t.label)] : ["test", file, ...items.map((t) => t.label)];
+      if (withCoverage) args.splice(1, 0, "--coverage");
       const started = Date.now();
       const r = await mimic(args, root || path.dirname(file));
       const results = parseTestOutput(r.stdout + r.stderr);
@@ -236,6 +263,8 @@ function setUpTests(context) {
         if (!res) {
           run.errored(t, new vscode.TestMessage((r.stderr || r.stdout || "mimic test gave no result").trim()), Date.now() - started);
         } else if (res.ok) {
+          failingCases.delete(`${t.uri.fsPath}#${t.range.start.line}`);
+          lensesChanged.fire();
           run.passed(t, Date.now() - started);
         } else {
           const msg = new vscode.TestMessage(res.detail.join("\n"));
@@ -246,13 +275,49 @@ function setUpTests(context) {
             msg.expectedOutput = right.trim().slice(6).trim();
           }
           msg.location = new vscode.Location(t.uri, t.range);
-          run.failed(t, msg, Date.now() - started);
+          // every line the failure names, on that line; a property's
+          // smallest failing case, kept for the lens that makes it a test
+          const facts = failureFacts(res.detail);
+          const msgs = [msg];
+          for (const a of facts.at) {
+            const m = new vscode.TestMessage(a.text);
+            m.location = new vscode.Location(t.uri, new vscode.Position(Math.max(0, a.line - 1), 0));
+            msgs.push(m);
+          }
+          const key = `${t.uri.fsPath}#${t.range.start.line}`;
+          if (facts.counterexample) failingCases.set(key, facts.counterexample);
+          else failingCases.delete(key);
+          lensesChanged.fire();
+          run.failed(t, msgs, Date.now() - started);
         }
       }
+      if (withCoverage) addCoverage(run, r.stdout + r.stderr, root || path.dirname(file));
     }
     run.end();
   };
-  ctrl.createRunProfile("Run", vscode.TestRunProfileKind.Run, runHandler, true);
+
+  /** The counts `mimic test --coverage` saved, as VS Code's coverage. */
+  const addCoverage = (run, text, cwd) => {
+    const m = /Saved\s+(.*coverage\.json)/.exec(text);
+    if (!m) return;
+    let report;
+    try {
+      report = JSON.parse(fs.readFileSync(path.resolve(cwd, m[1].trim()), "utf8"));
+    } catch {
+      return;
+    }
+    for (const f of report.files || []) {
+      const uri = vscode.Uri.file(f.path);
+      coverageLines.set(uri.toString(), f.lines);
+      const hit = f.lines.filter(([, n]) => n > 0).length;
+      run.addCoverage(new vscode.FileCoverage(uri, new vscode.TestCoverageCount(hit, f.lines.length)));
+    }
+  };
+  ctrl.createRunProfile("Run", vscode.TestRunProfileKind.Run, (r, t) => runHandler(r, t, false), true);
+  if (vscode.FileCoverage && vscode.TestRunProfileKind.Coverage) {
+    const cov = ctrl.createRunProfile("Coverage", vscode.TestRunProfileKind.Coverage, (r, t) => runHandler(r, t, true), true);
+    cov.loadDetailedCoverage = async (_run, fc) => (coverageLines.get(fc.uri.toString()) || []).map(([line, n]) => new vscode.StatementCoverage(n, new vscode.Position(Math.max(0, line - 1), 0)));
+  }
   scan();
 }
 
@@ -355,6 +420,7 @@ async function activate(context) {
     runInTerminal(file && !projectRoot(file) ? ["check", file] : ["check"], file);
   });
   cmd("mimic.openManual", openManual);
+  cmd("mimic.keepCase", keepCase);
   cmd("mimic.manualPage", (topic) => showManual(String(topic || "index")));
   cmd("mimic.manualForWord", manualForWord);
   cmd("mimic.searchManual", searchManual);
@@ -382,6 +448,7 @@ async function activate(context) {
   require("./repl").start(context);
   require("./netview").start(context);
   require("./extras").start(context);
+  require("./notebook").start(context);
   // for tests and other extensions: the mimic in use
   const insight = require("./insight");
   return { mimic: () => setup.found(), lastProfile: insight.lastProfile, whereItems: insight.whereItems };

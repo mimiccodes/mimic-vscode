@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0
+
+- **Notebooks** (`.mimnb`, *Mimic: New Notebook*): Markdown and code cells; the code cells of a notebook share one session (`mimic repl --json`), so a cell's `let`s and `fn`s are there for the next. *Restart the Notebook's Session* empties it.
+- **Coverage** in the Test Explorer (*Run with Coverage*, VS Code 1.88 and newer): `mimic test --coverage`, with the lines run and not run in the editor's gutter and a percentage per file.
+- **Failures where they happened**: each line a failed test names gets its own message there, and a broken contract points at its `requires` or `ensures`. A property test that fails shows its smallest failing case above it (`✗ fails for x = 100`), and one click keeps that case as a test of its own.
+- With a Mimic that has them, from `mimic lsp`: **signature help**, **rename**, the **call hierarchy**, **smart selection**, and **inferred types** after each `let` (with a code action that writes one in).
+- Glyph input works while another panel (the net view, a notebook) has the focus.
+
 ## 0.7.0
 
 - **Glyphs as you type**: `\i` becomes `⍳` at once, `\e` `¨`, `\k` `⌿` … (not inside strings or comments; `mimic.glyphInput`).

@@ -2,7 +2,7 @@
   "name": "mimic",
   "displayName": "Mimic",
   "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run, Test and Debug, the test explorer, the manual, and installing Mimic.",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "publisher": "mimiccodes",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
@@ -40,6 +40,7 @@
     "onDebugResolve:mimic",
     "onLanguage:mimic",
     "onLanguage:mimic-net",
+    "onNotebook:mimic-notebook",
     "onView:mimic.glyphs",
     "workspaceContains:**/mim.mim"
   ],
@@ -388,6 +389,21 @@
         "command": "mimic.manualPage",
         "title": "Open a Manual Page",
         "category": "Mimic"
+      },
+      {
+        "command": "mimic.keepCase",
+        "title": "Keep the Failing Case as a Test",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.newNotebook",
+        "title": "New Notebook",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.restartNotebook",
+        "title": "Restart the Notebook's Session",
+        "category": "Mimic"
       }
     ],
     "keybindings": [
@@ -467,6 +483,10 @@
         },
         {
           "command": "mimic.manualPage",
+          "when": "false"
+        },
+        {
+          "command": "mimic.keepCase",
           "when": "false"
         }
       ]
@@ -806,6 +826,17 @@
       {
         "id": "mimic.mcp",
         "label": "Mimic"
+      }
+    ],
+    "notebooks": [
+      {
+        "type": "mimic-notebook",
+        "displayName": "Mimic Notebook",
+        "selector": [
+          {
+            "filenamePattern": "*.mimnb"
+          }
+        ]
       }
     ]
   },

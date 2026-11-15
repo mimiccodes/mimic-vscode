@@ -15,17 +15,17 @@
   },
   "outside_mimic": 0.0,
   "program": "/Users/harshkumar/projects/harcorp/mimic/editors/vscode/test/workspace/target/profiling/sample",
-  "rate_hz": 669.0,
+  "rate_hz": 1000.0,
   "runtime": [],
   "samples": 0,
   "threads": [
     {
       "name": "main",
       "samples": 0,
-      "seen": 1.0,
+      "seen": 0.4240882103477524,
       "waiting": 0,
       "working": 0.0
     }
   ],
-  "wall_seconds": 0.001495
+  "wall_seconds": 0.002358
 }

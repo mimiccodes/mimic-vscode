@@ -51,21 +51,21 @@ Items marked **(mimic)** also need work in the compiler, in the
 | ✅ | B11. Glyph input as you type (`\i` becomes `⍳` at once) |
 | ✅ | B12. A glyph bar |
 | ✅ | B13. More snippets (tests, property tests, contracts, match, types, extern "C") |
-| · | B14. Signature help **(mimic)** |
-| · | B15. Rename **(mimic)** |
-| · | B16. Inferred types as inlay hints **(mimic)** |
-| ◐ | B17. Folding by brackets and indentation ✅; smart selection **(mimic)** |
+| ✅ | B14. Signature help **(mimic)** |
+| ✅ | B15. Rename **(mimic)** |
+| ✅ | B16. Inferred types as inlay hints **(mimic)** |
+| ✅ | B17. Folding by brackets and indentation; smart selection (from `mimic lsp`) |
 | ◐ | B18. Format on save through the language server (`"[mimic]": { "editor.formatOnSave": true }`) ✅; choosing words or glyphs on save |
-| · | B19. More code actions **(mimic)** |
-| · | C21. Call hierarchy **(mimic)** |
+| ◐ | B19. More code actions: write an inferred type in ✅; extract a function, inline a `let` to come **(mimic)** |
+| ✅ | C21. Call hierarchy **(mimic)** |
 | ✅ | C22. A module tree from `mod.mim` |
 | ✅ | C23. `mim.mim`: completion, checks, Install dependencies |
 | ✅ | C24. New Project, Add Dependency, workspace members |
 | ✅ | D26. Tasks for build, run, test, audit and fmt, with problem matchers |
 | ✅ | D27. Launch settings: arguments, the folder, environment, stop on entry |
-| · | D28. Property-test counterexamples on the code, with Replay **(mimic)** |
-| · | D29. Contract failures linked to `requires`/`ensures` |
-| · | D30. Test coverage **(mimic)** |
+| ✅ | D28. A property test's smallest failing case on the code, kept as a test of its own in one click (the replay that stays) |
+| ✅ | D29. Contract failures linked to `requires`/`ensures` |
+| ✅ | D30. Test coverage **(mimic)** |
 | · | D31. Debugger: Mimic watch expressions, conditional breakpoints, arrays as tables |
 | ✅ | E38. Target and GPU picker |
 | ✅ | F39. `mimic audit` findings in Problems on save |
@@ -74,7 +74,7 @@ Items marked **(mimic)** also need work in the compiler, in the
 | ✅ | G43. *Run an Example from the Manual…* |
 | ✅ | G44. `mimic doc` preview |
 | ✅ | G45. The tutorial as a walkthrough |
-| · | H47. Mimic notebooks **(mimic: `mimic repl --json`)** |
+| ✅ | H47. Mimic notebooks (`.mimnb`, on `mimic repl --json`) |
 | ✅ | I48. `mimic mcp` registered with VS Code for agents |
 | ✅ | I49. Agent guide and prompts |
 | ✅ | J50. Live preview of UI programs (`mimic run --web`) |

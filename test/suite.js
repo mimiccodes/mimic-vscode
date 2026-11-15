@@ -108,6 +108,22 @@ exports.run = async function () {
   const tasks = await vscode.tasks.fetchTasks({ type: "mimic" });
   assert.ok(["Build", "Run", "Test", "Audit"].every((n) => tasks.some((t) => t.name === n)), tasks.map((t) => t.name).join(", "));
 
+  // a notebook: cells share one session
+  const nbData = new vscode.NotebookData([
+    new vscode.NotebookCellData(vscode.NotebookCellKind.Code, "let xs = ⍳ 4", "mimic"),
+    new vscode.NotebookCellData(vscode.NotebookCellKind.Code, "xs ▷ +/", "mimic"),
+  ]);
+  const nb = await vscode.workspace.openNotebookDocument("mimic-notebook", nbData);
+  await vscode.window.showNotebookDocument(nb);
+  await vscode.commands.executeCommand("notebook.selectKernel", { id: "mimic-repl", extension: "mimiccodes.mimic" });
+  await vscode.commands.executeCommand("notebook.execute");
+  const out = await until("the notebook's answer", () => {
+    const o = nb.cellAt(1).outputs[0];
+    return o && Buffer.from(o.items[0].data).toString("utf8");
+  }, 120000);
+  assert.equal(out.trim(), "6");
+  await vscode.commands.executeCommand("workbench.action.closeActiveEditor");
+
   // the REPL in a terminal
   await vscode.commands.executeCommand("mimic.openRepl");
   await until("the REPL terminal", () => vscode.window.terminals.some((t) => t.name === "Mimic REPL"));

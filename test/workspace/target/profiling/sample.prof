@@ -1,7 +1,7 @@
 mimic-profile 1
 hz 1000
-wall_ns 1495000
-anchor 102081b6c
+wall_ns 2358000
+anchor 1021fdb6c
 counter alloc_bytes 0
 counter allocs 0
 counter copy_bytes 0
@@ -10,6 +10,6 @@ counter gpu_ns 0
 counter gpu_kernels 0
 counter gpu_bytes 0
 counter lost 0
-counter rounds 1
+counter rounds 0
 thread 0 0 main
 samples 0 24
