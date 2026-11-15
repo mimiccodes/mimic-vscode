@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.0
+
+- **Glyphs as you type**: `\i` becomes `⍳` at once, `\e` `¨`, `\k` `⌿` … (not inside strings or comments; `mimic.glyphInput`).
+- **The Glyphs view** in the Mimic side bar: every glyph by group with its word, digraph and meaning, searchable; a click puts it in the code.
+- **The Project view**: the project's modules with their functions and types (signature and comment on hover), refreshed on save.
+- **`mim.mim`**: completion of blocks and keys, **Install dependencies** and **Add a dependency…** above `dependencies` (a git URL with `@tag`, written into `mim.mim` and installed).
+- **Mimic: New Project…** (a program or a library, then opened).
+- **Tasks** for build, run, test, check, audit, fmt and doc, with a problem matcher for Mimic's errors; **the build target** in the status bar (this machine, or any target `mimic targets` knows), used by Build and Run.
+- **`mimic audit` on save**: findings in Problems, with the rule's manual page as the link (`mimic.audit.onSave`).
+- **Preview the Docs** (`mimic doc` beside the code), **Preview the UI** (`mimic run --web` in VS Code's browser), **Run an Example from the Manual…**, and a **Learn Mimic** walkthrough through the tutorial.
+- **Agents**: VS Code 1.101 and newer get `mimic mcp` as an MCP server for agent mode (full access inside the project, the rest as settings: `mimic.mcp.*`); *Writing Mimic with Agents* opens the guide.
+- Snippets for property tests, contracts, unions, `extern "C"`, `¨`, `let … else` and modules; `env` in debug launch settings.
+
 ## 0.6.0
 
 Interaction nets you can see (with a Mimic that has `mimic net show` and `mimic net trace`).

@@ -2,7 +2,7 @@
   "name": "mimic",
   "displayName": "Mimic",
   "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run, Test and Debug, the test explorer, the manual, and installing Mimic.",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "publisher": "mimiccodes",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
@@ -38,6 +38,9 @@
   "activationEvents": [
     "onDebugDynamicConfigurations:mimic",
     "onDebugResolve:mimic",
+    "onLanguage:mimic",
+    "onLanguage:mimic-net",
+    "onView:mimic.glyphs",
     "workspaceContains:**/mim.mim"
   ],
   "contributes": {
@@ -151,6 +154,51 @@
           "type": "boolean",
           "default": true,
           "description": "After a profile, show each function's share of the time at the end of its first line."
+        },
+        "mimic.glyphInput": {
+          "type": "boolean",
+          "default": true,
+          "description": "Turn a backslash digraph into its glyph as you type (`\\i` becomes `⍳`), except in strings and comments."
+        },
+        "mimic.target": {
+          "type": "string",
+          "default": "",
+          "description": "The target of the Build and Run tasks (`--target`), e.g. `x86_64-linux-musl`; empty for this machine."
+        },
+        "mimic.audit.onSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run `mimic audit` when a Mimic file is saved and show its findings in Problems."
+        },
+        "mimic.mcp.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Offer `mimic mcp` to agents in VS Code (VS Code 1.101 and newer): check, build, run and test Mimic, read the manual."
+        },
+        "mimic.mcp.allowOutside": {
+          "type": "boolean",
+          "default": false,
+          "description": "Let agents read and write files outside the project (`--allow-outside`)."
+        },
+        "mimic.mcp.allowInstall": {
+          "type": "boolean",
+          "default": false,
+          "description": "Let agents install libraries (`--allow-install`)."
+        },
+        "mimic.mcp.allowNetwork": {
+          "type": "boolean",
+          "default": false,
+          "description": "Let agents run programs that use the network or run other programs (`--allow-network`)."
+        },
+        "mimic.mcp.readOnly": {
+          "type": "boolean",
+          "default": false,
+          "description": "Agents only read, check and look up (`--read-only`)."
+        },
+        "mimic.mcp.noRun": {
+          "type": "boolean",
+          "default": false,
+          "description": "Agents do not run programs or tests (`--no-run`)."
         }
       }
     },
@@ -284,6 +332,62 @@
         "title": "Show Interaction Net",
         "category": "Mimic",
         "icon": "$(type-hierarchy)"
+      },
+      {
+        "command": "mimic.newProject",
+        "title": "New Project…",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.addDependency",
+        "title": "Add a Dependency…",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.installDeps",
+        "title": "Install Dependencies",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.pickTarget",
+        "title": "Choose the Build Target…",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.docPreview",
+        "title": "Preview the Docs",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.uiPreview",
+        "title": "Preview the UI",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.runManualExample",
+        "title": "Run an Example from the Manual…",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.agentGuide",
+        "title": "Writing Mimic with Agents",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.refreshModules",
+        "title": "Refresh Project",
+        "category": "Mimic",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "mimic.runExample",
+        "title": "Run Example",
+        "category": "Mimic"
+      },
+      {
+        "command": "mimic.manualPage",
+        "title": "Open a Manual Page",
+        "category": "Mimic"
       }
     ],
     "keybindings": [
@@ -345,11 +449,24 @@
           "command": "mimic.refreshWhere",
           "when": "view == mimic.where",
           "group": "navigation"
+        },
+        {
+          "command": "mimic.refreshModules",
+          "when": "view == mimic.modules",
+          "group": "navigation"
         }
       ],
       "commandPalette": [
         {
           "command": "mimic.openAt",
+          "when": "false"
+        },
+        {
+          "command": "mimic.runExample",
+          "when": "false"
+        },
+        {
+          "command": "mimic.manualPage",
           "when": "false"
         }
       ]
@@ -395,6 +512,14 @@
               "stopOnEntry": {
                 "type": "boolean",
                 "default": false
+              },
+              "env": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "default": {},
+                "description": "Environment variables for the program"
               }
             }
           }
@@ -485,6 +610,101 @@
             ]
           }
         ]
+      },
+      {
+        "id": "mimic.learn",
+        "title": "Learn Mimic",
+        "description": "The tutorial, chapter by chapter, beside your code.",
+        "steps": [
+          {
+            "id": "ch1",
+            "title": "1. Getting started",
+            "description": "Values, `print`, running a file.\n[Read chapter 1](command:mimic.manualPage?%5B%221%22%5D)",
+            "media": {
+              "markdown": "walkthrough/learn.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.manualPage"
+            ]
+          },
+          {
+            "id": "ch3",
+            "title": "3. Arrays and glyphs",
+            "description": "`⍳ 10 ▷ +/`: every glyph has a word.\n[Read chapter 3](command:mimic.manualPage?%5B%223%22%5D)",
+            "media": {
+              "markdown": "walkthrough/learn.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.manualPage"
+            ]
+          },
+          {
+            "id": "ch4",
+            "title": "4. No loops",
+            "description": "`¨`, recursion, `evolve` and `settle` instead of loops.\n[Read chapter 4](command:mimic.manualPage?%5B%224%22%5D)",
+            "media": {
+              "markdown": "walkthrough/learn.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.manualPage"
+            ]
+          },
+          {
+            "id": "ch5",
+            "title": "5. Records, unions and match",
+            "description": "Data types, and `match` that checks every case.\n[Read chapter 5](command:mimic.manualPage?%5B%225%22%5D)",
+            "media": {
+              "markdown": "walkthrough/learn.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.manualPage"
+            ]
+          },
+          {
+            "id": "ch7",
+            "title": "7. Errors without exceptions",
+            "description": "`Result`, `else`, and errors you cannot forget.\n[Read chapter 7](command:mimic.manualPage?%5B%227%22%5D)",
+            "media": {
+              "markdown": "walkthrough/learn.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.manualPage"
+            ]
+          },
+          {
+            "id": "ch10",
+            "title": "10. Parallel by default",
+            "description": "What runs on all cores, and why it is safe.\n[Read chapter 10](command:mimic.manualPage?%5B%2210%22%5D)",
+            "media": {
+              "markdown": "walkthrough/learn.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.manualPage"
+            ]
+          },
+          {
+            "id": "ch11",
+            "title": "11. Projects and modules",
+            "description": "`mim.mim`, modules, `pub`, libraries from git.\n[Read chapter 11](command:mimic.manualPage?%5B%2211%22%5D)",
+            "media": {
+              "markdown": "walkthrough/learn.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.manualPage"
+            ]
+          },
+          {
+            "id": "ch14",
+            "title": "14. Tooling",
+            "description": "Tests, property tests, contracts, the profiler, the REPL.\n[Read chapter 14](command:mimic.manualPage?%5B%2214%22%5D)",
+            "media": {
+              "markdown": "walkthrough/learn.md"
+            },
+            "completionEvents": [
+              "onCommand:mimic.manualPage"
+            ]
+          }
+        ]
       }
     ],
     "viewsContainers": {
@@ -499,6 +719,15 @@
     "views": {
       "mimic": [
         {
+          "id": "mimic.modules",
+          "name": "Project"
+        },
+        {
+          "type": "webview",
+          "id": "mimic.glyphs",
+          "name": "Glyphs"
+        },
+        {
           "id": "mimic.hot",
           "name": "Hot Functions"
         },
@@ -512,6 +741,71 @@
       {
         "view": "mimic.hot",
         "contents": "Profile a program to see where its time goes.\n[Profile](command:mimic.profile)"
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "mimic",
+        "required": [
+          "command"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "enum": [
+              "build",
+              "run",
+              "test",
+              "check",
+              "audit",
+              "fmt",
+              "doc"
+            ],
+            "description": "The mimic command"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "More arguments"
+          },
+          "release": {
+            "type": "boolean",
+            "description": "--release"
+          }
+        }
+      }
+    ],
+    "problemMatchers": [
+      {
+        "name": "mimic",
+        "owner": "mimic",
+        "source": "mimic",
+        "fileLocation": [
+          "autoDetect",
+          "${workspaceFolder}"
+        ],
+        "pattern": [
+          {
+            "regexp": "^(error|warning)\\[(\\w+)\\]: (.*)$",
+            "severity": 1,
+            "code": 2,
+            "message": 3
+          },
+          {
+            "regexp": "^\\s*--> (.*):(\\d+):(\\d+)$",
+            "file": 1,
+            "line": 2,
+            "column": 3
+          }
+        ]
+      }
+    ],
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "mimic.mcp",
+        "label": "Mimic"
       }
     ]
   },

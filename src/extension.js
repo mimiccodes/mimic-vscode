@@ -280,7 +280,9 @@ class ManualPages {
   }
 }
 
+let shownTopic;
 async function showManual(topic) {
+  shownTopic = topic;
   const uri = vscode.Uri.parse(`mimic-man:/${encodeURIComponent(topic)}.md`);
   await vscode.commands.executeCommand("markdown.showPreviewToSide", uri);
 }
@@ -353,6 +355,7 @@ async function activate(context) {
     runInTerminal(file && !projectRoot(file) ? ["check", file] : ["check"], file);
   });
   cmd("mimic.openManual", openManual);
+  cmd("mimic.manualPage", (topic) => showManual(String(topic || "index")));
   cmd("mimic.manualForWord", manualForWord);
   cmd("mimic.searchManual", searchManual);
   cmd("mimic.toGlyphs", () => convert(true));
@@ -378,6 +381,7 @@ async function activate(context) {
   require("./insight").start(context);
   require("./repl").start(context);
   require("./netview").start(context);
+  require("./extras").start(context);
   // for tests and other extensions: the mimic in use
   const insight = require("./insight");
   return { mimic: () => setup.found(), lastProfile: insight.lastProfile, whereItems: insight.whereItems };
@@ -387,4 +391,4 @@ function deactivate() {
   return client ? client.stop() : undefined;
 }
 
-module.exports = { activate, deactivate };
+module.exports = { activate, deactivate, lastTopic: () => shownTopic };

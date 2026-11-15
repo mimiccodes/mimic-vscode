@@ -48,38 +48,38 @@ Items marked **(mimic)** also need work in the compiler, in the
 
 | | Item |
 |---|---|
-| · | B11. Glyph input as you type (`\i` becomes `⍳` at once) |
-| · | B12. A glyph bar |
-| · | B13. More snippets (tests, property tests, contracts, match, types, extern "C") |
+| ✅ | B11. Glyph input as you type (`\i` becomes `⍳` at once) |
+| ✅ | B12. A glyph bar |
+| ✅ | B13. More snippets (tests, property tests, contracts, match, types, extern "C") |
 | · | B14. Signature help **(mimic)** |
 | · | B15. Rename **(mimic)** |
 | · | B16. Inferred types as inlay hints **(mimic)** |
-| · | B17. Folding and smart selection |
-| · | B18. Format on save, in words or glyphs |
+| ◐ | B17. Folding by brackets and indentation ✅; smart selection **(mimic)** |
+| ◐ | B18. Format on save through the language server (`"[mimic]": { "editor.formatOnSave": true }`) ✅; choosing words or glyphs on save |
 | · | B19. More code actions **(mimic)** |
 | · | C21. Call hierarchy **(mimic)** |
-| · | C22. A module tree from `mod.mim` |
-| · | C23. `mim.mim`: completion, checks, Install dependencies |
-| · | C24. New Project, Add Dependency, workspace members |
-| · | D26. Tasks for build, run, test, audit and fmt, with problem matchers |
-| · | D27. Launch settings: arguments, input, environment, release, target |
+| ✅ | C22. A module tree from `mod.mim` |
+| ✅ | C23. `mim.mim`: completion, checks, Install dependencies |
+| ✅ | C24. New Project, Add Dependency, workspace members |
+| ✅ | D26. Tasks for build, run, test, audit and fmt, with problem matchers |
+| ✅ | D27. Launch settings: arguments, the folder, environment, stop on entry |
 | · | D28. Property-test counterexamples on the code, with Replay **(mimic)** |
 | · | D29. Contract failures linked to `requires`/`ensures` |
 | · | D30. Test coverage **(mimic)** |
 | · | D31. Debugger: Mimic watch expressions, conditional breakpoints, arrays as tables |
-| · | E38. Target and GPU picker |
-| · | F39. `mimic audit` findings in Problems on save |
-| · | F40. Audit summary and trend |
-| · | G42. Glyph cheat sheet with runnable examples |
-| · | G43. Run the examples in the manual |
-| · | G44. `mimic doc` preview |
-| · | G45. The tutorial as a walkthrough |
+| ✅ | E38. Target and GPU picker |
+| ✅ | F39. `mimic audit` findings in Problems on save |
+| ◐ | F40. Audit findings in Problems, with the rule's page as the code's link ✅; a summary and trend view |
+| ✅ | G42. The Glyphs view: every glyph by group, its word, digraph and meaning, searchable, inserted with a click |
+| ✅ | G43. *Run an Example from the Manual…* |
+| ✅ | G44. `mimic doc` preview |
+| ✅ | G45. The tutorial as a walkthrough |
 | · | H47. Mimic notebooks **(mimic: `mimic repl --json`)** |
-| · | I48. `mimic mcp` registered with VS Code for agents |
-| · | I49. Agent guide and prompts |
-| · | J50. Live preview of UI programs (`mimic run --web`) |
+| ✅ | I48. `mimic mcp` registered with VS Code for agents |
+| ✅ | I49. Agent guide and prompts |
+| ✅ | J50. Live preview of UI programs (`mimic run --web`) |
 | · | K52. Marketplace and Open VSX (needs the publisher tokens) |
-| · | K53. Installing a newer extension from GitHub inside VS Code |
+| ✅ | K53. Installing a newer extension from GitHub inside VS Code |
 
 Already there: the language server (errors as you type, hover, definitions,
 references, completion, formatting, outline, C names in their own colour),

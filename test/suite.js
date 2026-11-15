@@ -83,6 +83,31 @@ exports.run = async function () {
   await vscode.commands.executeCommand("mimic.showNet", uri, "main::double");
   await until("the net view", () => vscode.window.tabGroups.all.some((g) => g.tabs.some((t) => t.label.startsWith("Net: main.mim"))));
 
+  // glyphs as you type: \ then i becomes ⍳ (not inside a string)
+  // (the net view took the focus: the editor first)
+  const ed2 = await vscode.window.showTextDocument(doc, vscode.ViewColumn.One);
+  await ed2.edit((e) => e.insert(new vscode.Position(7, 0), "    print(\n"));
+  // one character at a time, as typing does
+  const typeAt = async (line, text) => {
+    for (const ch of text) {
+      const at = doc.lineAt(line).text.length;
+      await ed2.edit((e) => e.insert(new vscode.Position(line, at), ch));
+      await wait(50);
+    }
+  };
+  await typeAt(7, "\\i");
+  await until("⍳", () => doc.lineAt(7).text.includes("⍳"), 5000).catch((e) => {
+    throw new Error(`${e.message}: the line is ${JSON.stringify(doc.lineAt(7).text)}`);
+  });
+  await typeAt(7, ' "\\i');
+  await wait(300);
+  assert.ok(doc.lineAt(7).text.endsWith('"\\i'), doc.lineAt(7).text);
+  await vscode.commands.executeCommand("workbench.action.files.revert");
+
+  // tasks for the project
+  const tasks = await vscode.tasks.fetchTasks({ type: "mimic" });
+  assert.ok(["Build", "Run", "Test", "Audit"].every((n) => tasks.some((t) => t.name === n)), tasks.map((t) => t.name).join(", "));
+
   // the REPL in a terminal
   await vscode.commands.executeCommand("mimic.openRepl");
   await until("the REPL terminal", () => vscode.window.terminals.some((t) => t.name === "Mimic REPL"));

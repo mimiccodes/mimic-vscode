@@ -15,7 +15,7 @@
   },
   "outside_mimic": 0.0,
   "program": "/Users/harshkumar/projects/harcorp/mimic/editors/vscode/test/workspace/target/profiling/sample",
-  "rate_hz": 654.0,
+  "rate_hz": 669.0,
   "runtime": [],
   "samples": 0,
   "threads": [
@@ -27,5 +27,5 @@
       "working": 0.0
     }
   ],
-  "wall_seconds": 0.001528
+  "wall_seconds": 0.001495
 }
