@@ -10,7 +10,7 @@ const fs = require("fs");
 const cp = require("child_process");
 const { LanguageClient } = require("vscode-languageclient/node");
 const GLYPHS = require("./glyphs.json");
-const { newer, MAIN, TEST, testsIn, parseTestOutput } = require("./util");
+const { MAIN, TEST, testsIn, parseTestOutput } = require("./util");
 
 /** The oldest `mimic` with everything this extension uses (`mimic lsp`). */
 const NEEDS = "0.3.4";
@@ -53,24 +53,30 @@ function projectRoot(file) {
 async function checkVersion() {
   const r = await mimic(["--version"]);
   if (r.missing || r.code !== 0) {
-    const pick = await vscode.window.showWarningMessage(
-      `Mimic: \`${mimicPath()}\` was not found. Install Mimic, or set "mimic.path".`,
-      "Download Mimic",
-      "Set Path",
-    );
-    if (pick === "Download Mimic") vscode.env.openExternal(vscode.Uri.parse(RELEASES));
-    if (pick === "Set Path") vscode.commands.executeCommand("workbench.action.openSettings", "mimic.path");
+    // (never awaited: activation must not wait for someone to click)
+    vscode.window
+      .showWarningMessage(`Mimic: \`${mimicPath()}\` was not found. Install Mimic, or set "mimic.path".`, "Download Mimic", "Set Path")
+      .then((pick) => {
+        if (pick === "Download Mimic") vscode.env.openExternal(vscode.Uri.parse(RELEASES));
+        if (pick === "Set Path") vscode.commands.executeCommand("workbench.action.openSettings", "mimic.path");
+      });
     return false;
   }
-  const m = /mimic (\d+\.\d+\.\d+)/.exec(r.stdout);
-  if (m && newer(NEEDS, m[1]) && config().get("checkVersion")) {
-    const pick = await vscode.window.showWarningMessage(
-      `Mimic ${m[1]} is installed; this extension needs ${NEEDS} or newer for errors as you type, hover and completion.`,
-      "Download Mimic",
-      "Don't Ask Again",
-    );
-    if (pick === "Download Mimic") vscode.env.openExternal(vscode.Uri.parse(RELEASES));
-    if (pick === "Don't Ask Again") config().update("checkVersion", false, vscode.ConfigurationTarget.Global);
+  // what this extension needs is `mimic lsp` (and `mimic dap` for debugging),
+  // in any build that has them, released or built from source
+  const lsp = await mimic(["lsp", "--help"]);
+  if (lsp.code !== 0 && config().get("checkVersion")) {
+    const m = /mimic (\d+\.\d+\.\d+)/.exec(r.stdout);
+    vscode.window
+      .showWarningMessage(
+        `Mimic ${m ? m[1] : ""} has no language server (\`mimic lsp\`, from ${NEEDS}): errors as you type, hover and completion need a newer Mimic.`,
+        "Download Mimic",
+        "Don't Ask Again",
+      )
+      .then((pick) => {
+        if (pick === "Download Mimic") vscode.env.openExternal(vscode.Uri.parse(RELEASES));
+        if (pick === "Don't Ask Again") config().update("checkVersion", false, vscode.ConfigurationTarget.Global);
+      });
     return false;
   }
   return true;
@@ -149,6 +155,28 @@ async function run(uri) {
   runInTerminal(projectRoot(file) ? ["run"] : ["run", file], file);
 }
 
+/** Debug the program of `uri` (a file, or its project) with `mimic dap`. */
+async function debug(uri) {
+  const file = uri instanceof vscode.Uri ? uri.fsPath : vscode.window.activeTextEditor?.document.uri.fsPath;
+  if (!file) return;
+  await vscode.workspace.saveAll(false);
+  const folder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(file));
+  await vscode.debug.startDebugging(folder, { type: "mimic", request: "launch", name: "Debug " + path.basename(projectRoot(file) || file), program: projectRoot(file) || file });
+}
+
+class DebugConfigs {
+  // F5 with no launch.json: the active file's project, or the file
+  resolveDebugConfiguration(folder, config) {
+    if (!config.type && !config.request) {
+      const file = vscode.window.activeTextEditor?.document.uri.fsPath;
+      if (!file || !file.endsWith(".mim")) return undefined;
+      return { type: "mimic", request: "launch", name: "Debug", program: projectRoot(file) || file };
+    }
+    if (!config.program) config.program = folder ? folder.uri.fsPath : vscode.window.activeTextEditor?.document.uri.fsPath;
+    return config;
+  }
+}
+
 async function test(uri, name) {
   const file = uri instanceof vscode.Uri ? uri.fsPath : vscode.window.activeTextEditor?.document.uri.fsPath;
   if (!file) return;
@@ -168,6 +196,7 @@ class Lenses {
       const range = new vscode.Range(i, 0, i, 0);
       if (isMain && MAIN.test(line)) {
         lenses.push(new vscode.CodeLens(range, { title: "▶ Run", command: "mimic.run", arguments: [doc.uri] }));
+        lenses.push(new vscode.CodeLens(range, { title: "Debug", command: "mimic.debug", arguments: [doc.uri] }));
       }
       const t = TEST.exec(line);
       if (t) {
@@ -356,6 +385,7 @@ async function activate(context) {
   cmd("mimic.insertGlyph", insertGlyph);
   cmd("mimic.run", run);
   cmd("mimic.test", test);
+  cmd("mimic.debug", debug);
   cmd("mimic.check", async () => {
     const file = vscode.window.activeTextEditor?.document.uri.fsPath;
     await vscode.workspace.saveAll(false);
@@ -371,6 +401,10 @@ async function activate(context) {
   context.subscriptions.push(
     vscode.workspace.registerTextDocumentContentProvider("mimic-man", new ManualPages()),
     vscode.languages.registerCodeLensProvider({ language: "mimic" }, new Lenses()),
+    vscode.debug.registerDebugConfigurationProvider("mimic", new DebugConfigs()),
+    vscode.debug.registerDebugAdapterDescriptorFactory("mimic", {
+      createDebugAdapterDescriptor: () => new vscode.DebugAdapterExecutable(mimicPath(), ["dap"]),
+    }),
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("mimic.path") || e.affectsConfiguration("mimic.languageServer")) restartServer(context);
     }),

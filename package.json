@@ -2,7 +2,7 @@
   "name": "mimic",
   "displayName": "Mimic",
   "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run and Test, the test explorer and the manual.",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "publisher": "mimiccodes",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
@@ -36,6 +36,8 @@
   ],
   "main": "./src/extension.js",
   "activationEvents": [
+    "onDebugDynamicConfigurations:mimic",
+    "onDebugResolve:mimic",
     "workspaceContains:**/mim.mim"
   ],
   "contributes": {
@@ -163,6 +165,12 @@
         "icon": "$(play)"
       },
       {
+        "command": "mimic.debug",
+        "title": "Debug",
+        "category": "Mimic",
+        "icon": "$(debug-alt)"
+      },
+      {
         "command": "mimic.test",
         "title": "Run Tests",
         "category": "Mimic",
@@ -232,6 +240,11 @@
           "group": "navigation@1"
         },
         {
+          "command": "mimic.debug",
+          "when": "editorLangId == mimic",
+          "group": "navigation@1"
+        },
+        {
           "command": "mimic.insertGlyph",
           "when": "editorLangId == mimic",
           "group": "navigation@2"
@@ -249,6 +262,75 @@
       {
         "language": "mimic",
         "path": "./snippets/mimic.json"
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "mimic"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "mimic",
+        "label": "Mimic",
+        "languages": [
+          "mimic"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "properties": {
+              "program": {
+                "type": "string",
+                "default": "${file}",
+                "description": "A .mim file, or a project folder (its mim.mim) to build and debug"
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [],
+                "description": "Arguments for the program"
+              },
+              "cwd": {
+                "type": "string",
+                "description": "The folder the program runs in (default: the project's, or the file's)"
+              },
+              "stopOnEntry": {
+                "type": "boolean",
+                "default": false
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "mimic",
+            "request": "launch",
+            "name": "Debug the project",
+            "program": "${workspaceFolder}"
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "Mimic: Debug the project",
+            "body": {
+              "type": "mimic",
+              "request": "launch",
+              "name": "Debug the project",
+              "program": "^\"\\${workspaceFolder}\""
+            }
+          },
+          {
+            "label": "Mimic: Debug this file",
+            "body": {
+              "type": "mimic",
+              "request": "launch",
+              "name": "Debug this file",
+              "program": "^\"\\${file}\""
+            }
+          }
+        ]
       }
     ]
   },

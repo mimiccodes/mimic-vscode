@@ -35,7 +35,7 @@ exports.run = async function () {
   // the Run lens and the test lens
   const lenses = await vscode.commands.executeCommand("vscode.executeCodeLensProvider", uri);
   const titles = lenses.map((l) => l.command && l.command.title);
-  assert.ok(titles.includes("▶ Run") && titles.includes("▶ Run test"), JSON.stringify(titles));
+  assert.ok(titles.includes("▶ Run") && titles.includes("Debug") && titles.includes("▶ Run test"), JSON.stringify(titles));
 
   // glyph input: `\i` completes to ⍳
   await editor.edit((e) => e.insert(new vscode.Position(7, 0), "    \\i\n"));
