@@ -23,6 +23,8 @@ function exec(file, args, opts = {}) {
         stdout: String(stdout),
         stderr: String(stderr),
         missing: !!err && (err.code === "ENOENT" || err.code === "EACCES"),
+        timedOut: !!err && !!err.killed && !!opts.timeout,
+        signal: err && err.signal,
       });
     });
   });
@@ -54,13 +56,20 @@ async function fromLoginShell() {
 async function locate(setting) {
   const tried = [];
   const probe = async (file, how) => {
+    // the first start of a new mimic (about 200 MB) can be slow while the
+    // system scans it (Gatekeeper, Windows Defender) and other extensions
+    // start: a generous limit, and why it failed goes to the log
+    const v = await exec(file, ["--version"], { timeout: 60000 });
+    if (v.missing || v.code !== 0) {
+      const why = v.missing ? "not there" : v.timedOut ? "no answer in 60 s" : v.signal ? `stopped by ${v.signal}` : `exit status ${v.code}`;
+      tried.push(`${file} (${why})`);
+      return undefined;
+    }
     tried.push(file);
-    const v = await exec(file, ["--version"], { timeout: 15000 });
-    if (v.missing || v.code !== 0) return undefined;
-    const h = await exec(file, ["--help"], { timeout: 15000 });
+    const [h, nh] = await Promise.all([exec(file, ["--help"], { timeout: 30000 }), exec(file, ["net", "--help"], { timeout: 30000 })]);
     const commands = parseCommands(h.stdout);
     // `mimic net show` and `trace` came later than `mimic net`
-    const net = commands.has("net") ? parseCommands((await exec(file, ["net", "--help"], { timeout: 15000 })).stdout) : new Set();
+    const net = commands.has("net") ? parseCommands(nh.stdout) : new Set();
     return { path: file, how, version: parseVersion(v.stdout), commands, net };
   };
   if (setting) return (await probe(setting, "the mimic.path setting")) || { missing: true, tried, setting };
@@ -72,7 +81,7 @@ async function locate(setting) {
     if (r) return r;
   }
   for (const f of installed()) {
-    if (fs.existsSync(f)) {
+    if (fs.existsSync(f) && f !== shell) {
       const r = await probe(f, "where the installer puts it");
       if (r) return r;
     }

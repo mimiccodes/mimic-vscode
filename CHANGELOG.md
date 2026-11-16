@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.5
+
+- **Mimic is found after a fresh start.** Right after VS Code starts (or after an update), the first run of `mimic` can take a while: the system scans the new program (Gatekeeper on macOS, Windows Defender) while other extensions start. A check that took over 15 seconds counted as "not found". The first check now waits up to 60 seconds, the rest run side by side, and when Mimic is not found the extension looks again after 5, 20 and 60 seconds, so no reload is needed. The Mimic log says why each place it looked failed (not there, no answer, exit status).
+
 ## 0.10.4
 
 - **Installing or updating Mimic on Windows** failed with "the argument … install.ps1 to the -File parameter does not exist": the download was unpacked with PowerShell's `Expand-Archive`, which does not load where the execution policy forbids scripts, and that failure went unnoticed. It is now unpacked with Windows' own `tar`, with `Expand-Archive` (policy bypassed) as the fallback, and a failed unpack says why.

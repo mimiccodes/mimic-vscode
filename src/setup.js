@@ -82,11 +82,30 @@ async function refresh() {
   // (a bare `mimic`, the old default, means: find it)
   const setting = (config().get("path") || "").trim();
   found = await locate(setting && setting !== "mimic" ? setting : undefined);
-  if (found.missing) log(`mimic not found (tried ${found.tried.join(", ")})`);
-  else log(`mimic ${found.version} at ${found.path} (${found.how}); commands: ${[...found.commands].join(" ")}`);
+  if (found.missing) {
+    log(`mimic not found (tried ${found.tried.join(", ")})`);
+    retryLater();
+  } else {
+    retries = 0;
+    log(`mimic ${found.version} at ${found.path} (${found.how}); commands: ${[...found.commands].join(" ")}`);
+  }
   updateStatus();
   for (const f of listeners) await f(found);
   return found;
+}
+
+// Not found: look again a little later, a few times. Right after VS Code
+// starts, or after an update, the first run of mimic can be slow or fail
+// once; the next look usually finds it, without a reload.
+let retries = 0;
+let retryTimer;
+function retryLater() {
+  if (retryTimer || retries >= 3) return;
+  const delay = [5000, 20000, 60000][retries++];
+  retryTimer = setTimeout(() => {
+    retryTimer = undefined;
+    refresh();
+  }, delay);
 }
 
 function onChange(f) {
