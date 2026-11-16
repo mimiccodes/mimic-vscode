@@ -2,7 +2,7 @@
   "name": "mimic",
   "displayName": "Mimic",
   "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run, Test and Debug, the test explorer, the manual, and installing Mimic.",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "publisher": "mimiccodes",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
@@ -419,6 +419,11 @@
         "command": "mimic.restartNotebook",
         "title": "Restart the Notebook's Session",
         "category": "Mimic"
+      },
+      {
+        "command": "mimic.showArray",
+        "title": "Show as Table and Chart",
+        "category": "Mimic"
       }
     ],
     "keybindings": [
@@ -503,6 +508,17 @@
         {
           "command": "mimic.keepCase",
           "when": "false"
+        },
+        {
+          "command": "mimic.showArray",
+          "when": "false"
+        }
+      ],
+      "debug/variables/context": [
+        {
+          "command": "mimic.showArray",
+          "when": "debugType == mimic",
+          "group": "navigation"
         }
       ]
     },

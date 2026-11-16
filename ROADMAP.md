@@ -56,7 +56,7 @@ Items marked **(mimic)** also need work in the compiler, in the
 | ✅ | B16. Inferred types as inlay hints **(mimic)** |
 | ✅ | B17. Folding by brackets and indentation; smart selection (from `mimic lsp`) |
 | ✅ | B18. Format on save: keeping the file's style (`"[mimic]": { "editor.formatOnSave": true }`), or all words or all glyphs (`mimic.format.onSave`) |
-| ◐ | B19. More code actions: write an inferred type in ✅; extract a function, inline a `let` to come **(mimic)** |
+| ◐ | B19. More code actions: write an inferred type in ✅, extract into a function ✅; inline a `let` to come **(mimic)** |
 | ✅ | C21. Call hierarchy **(mimic)** |
 | ✅ | C22. A module tree from `mod.mim` |
 | ✅ | C23. `mim.mim`: completion, checks, Install dependencies |
@@ -66,7 +66,7 @@ Items marked **(mimic)** also need work in the compiler, in the
 | ✅ | D28. A property test's smallest failing case on the code, kept as a test of its own in one click (the replay that stays) |
 | ✅ | D29. Contract failures linked to `requires`/`ensures` |
 | ✅ | D30. Test coverage **(mimic)** |
-| · | D31. Debugger: Mimic watch expressions, conditional breakpoints, arrays as tables |
+| ◐ | D31. Debugger: a list or matrix as a table and chart from the Variables view ✅; watch expressions and breakpoint conditions in Mimic syntax to come **(mimic)** |
 | ✅ | E38. Target and GPU picker |
 | ✅ | F39. `mimic audit` findings in Problems on save |
 | ✅ | F40. The Audit view: the counts, new since the baseline, the trend of the last audits, findings by rule |

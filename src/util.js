@@ -198,4 +198,24 @@ function caseAsTest(lines, at, counterexample) {
   return { line: end, text };
 }
 
-module.exports = { failureFacts, splitValues, caseAsTest, compareProfiles, heatOf, escapeHtml, newer, MAIN, TEST, testsIn, parseTestOutput, parseVersion, parseCommands, platformTag, assetName, sumFor, checkProblems, due };
+/**
+ * A list or matrix as the debugger shows Mimic values: `[3 1 4]`,
+ * `[[1 2] [3 4]]`, `[1.5 -2 3e2]` → rows of numbers; undefined otherwise.
+ */
+function parseArray(text) {
+  const t = String(text || "").trim();
+  if (!t.startsWith("[") || !t.endsWith("]")) return undefined;
+  const inner = t.slice(1, -1).trim();
+  const num = (x) => {
+    const v = Number(x.replace(/^¯/, "-"));
+    return Number.isFinite(v) ? v : undefined;
+  };
+  if (inner.startsWith("[")) {
+    const rows = [...inner.matchAll(/\[([^\[\]]*)\]/g)].map((m) => m[1].trim().split(/[\s,]+/).filter(Boolean).map(num));
+    return rows.length && rows.every((r) => r.every((x) => x !== undefined)) ? rows : undefined;
+  }
+  const row = inner.split(/[\s,]+/).filter(Boolean).map(num);
+  return row.length && row.every((x) => x !== undefined) ? [row] : undefined;
+}
+
+module.exports = { parseArray, failureFacts, splitValues, caseAsTest, compareProfiles, heatOf, escapeHtml, newer, MAIN, TEST, testsIn, parseTestOutput, parseVersion, parseCommands, platformTag, assetName, sumFor, checkProblems, due };

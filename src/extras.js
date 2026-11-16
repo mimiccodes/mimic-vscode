@@ -10,7 +10,7 @@ const path = require("path");
 const setup = require("./setup");
 const { exec } = require("./mimic");
 const GLYPHS = require("./glyphs.json");
-const { escapeHtml } = require("./util");
+const { escapeHtml, parseArray } = require("./util");
 
 function config() {
   return vscode.workspace.getConfiguration("mimic");
@@ -507,6 +507,25 @@ function runExample(code) {
   terminalRun(["run", file], dir, "Mimic example");
 }
 
+// ---- a debugger variable as a table and a chart ------------------------------------------------
+
+function showArray(arg) {
+  const v = arg && arg.variable ? arg.variable : arg;
+  const rows = parseArray(v && v.value);
+  if (!rows) return vscode.window.showInformationMessage("This value is not a list or matrix of numbers.");
+  const p = vscode.window.createWebviewPanel("mimic.array", `${v.name || "value"}`, vscode.ViewColumn.Beside, {});
+  const flat = rows.flat();
+  const max = Math.max(...flat.map(Math.abs), 1e-12);
+  const bars =
+    rows.length === 1
+      ? `<svg viewBox="0 0 ${Math.max(1, flat.length) * 12} 100" preserveAspectRatio="none" style="width:100%;height:140px;background:var(--vscode-editor-background)">${flat
+          .map((x, i) => `<rect x="${i * 12 + 1}" y="${x >= 0 ? 50 - (x / max) * 48 : 50}" width="10" height="${Math.max(0.5, (Math.abs(x) / max) * 48)}" fill="#E24B04"><title>[${i}] ${x}</title></rect>`)
+          .join("")}<line x1="0" y1="50" x2="${flat.length * 12}" y2="50" stroke="#888" stroke-width="0.3"/></svg>`
+      : "";
+  const table = `<table>${rows.map((r, i) => `<tr><th>${rows.length > 1 ? i : ""}</th>${r.map((x) => `<td style="background:rgba(226,75,4,${(Math.abs(x) / max) * 0.6})">${x}</td>`).join("")}</tr>`).join("")}</table>`;
+  p.webview.html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:var(--vscode-font-family);color:var(--vscode-foreground);padding:10px}td,th{padding:2px 8px;text-align:right;font-family:var(--vscode-editor-font-family)}th{color:var(--vscode-descriptionForeground)}</style></head><body><h3>${escapeHtml(v.name || "")}: ${rows.length > 1 ? `${rows.length} × ${rows[0].length}` : flat.length} numbers, from ${Math.min(...flat)} to ${Math.max(...flat)}</h3>${bars}${table}</body></html>`;
+}
+
 // ---- agents ---------------------------------------------------------------------------------------
 
 function registerMcp(context) {
@@ -561,6 +580,7 @@ function start(context) {
     vscode.commands.registerCommand("mimic.runExample", runExample),
     vscode.commands.registerCommand("mimic.agentGuide", () => vscode.commands.executeCommand("mimic.manualPage", "agents")),
     vscode.commands.registerCommand("mimic.runManualExample", runManualExample),
+    vscode.commands.registerCommand("mimic.showArray", showArray),
     vscode.workspace.onDidSaveTextDocument((d) => {
       formatOnSave(d).then(() => audit(d));
       if (d.languageId === "mimic") modules.changed.fire();

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.0
+
+- **Show as Table and Chart** on a debugger variable holding a list or matrix of numbers: its values in a table shaded by size, and a bar chart for a list.
+- With a Mimic that has it: **Extract into a function** (select an expression; the variables it uses become the new function's parameters).
+
 ## 0.9.0
 
 - **The Audit view** in the Mimic side bar: errors, warnings and notes, how many are new since the baseline, the trend of the last audits, and the findings by rule (click to jump).

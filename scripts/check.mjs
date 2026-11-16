@@ -94,4 +94,8 @@ assert.equal(u.failureFacts(["mimic panic: contract broken: `half` requires x >=
 assert.deepEqual(u.splitValues('x = 1, ys = [1 2], s = "a, b"'), ["x = 1", "ys = [1 2]", 's = "a, b"']);
 const cat = u.caseAsTest(['test "small" for x: i64 {', "    expect(x < 100)", "}"], 0, "x = 100");
 assert.deepEqual(cat, { line: 2, text: '\ntest "small: x = 100" {\n    let x = 100\n    expect(x < 100)\n}' });
+assert.deepEqual(u.parseArray("[3 1 4]"), [[3, 1, 4]]);
+assert.deepEqual(u.parseArray("[[1 2] [3 4]]"), [[1, 2], [3, 4]]);
+assert.deepEqual(u.parseArray("[1.5 ¯2]"), [[1.5, -2]]);
+assert.equal(u.parseArray('["a" "b"]'), undefined);
 console.log(`ok: ${c.commands.length} commands, ${c.languages.length} languages, ${glyphs.length} glyphs`);
