@@ -6,10 +6,11 @@
 
 const vscode = require("vscode");
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const setup = require("./setup");
 const { exec } = require("./mimic");
-const { compareProfiles, heatOf, escapeHtml } = require("./util");
+const { compareProfiles, heatOf, escapeHtml, newer } = require("./util");
 
 let last; // { report, cwd, at }
 let previous;
@@ -48,9 +49,28 @@ async function profile(uri) {
   if (!file || !setup.need("profile")) return;
   await vscode.workspace.saveAll(false);
   const t = target(file);
+  // a server never ends by itself: Mimic 0.3.15 and later stop the program
+  // when a file appears, and still write its profile (the notification's
+  // Cancel button)
+  const version = setup.found().version;
+  const stop = version && !newer("0.3.15", version) ? path.join(os.tmpdir(), `mimic-profile-stop-${process.pid}-${Date.now()}`) : undefined;
   const r = await vscode.window.withProgress(
-    { location: vscode.ProgressLocation.Notification, title: "Mimic: profiling", cancellable: false },
-    () => exec(setup.mimicPath(), ["profile", "--json", ...t.args], { cwd: t.cwd }),
+    { location: vscode.ProgressLocation.Notification, title: "Mimic: profiling", cancellable: !!stop },
+    (progress, token) => {
+      const run = exec(setup.mimicPath(), ["profile", "--json", ...(stop ? ["--stop-file", stop] : []), ...t.args], { cwd: t.cwd });
+      if (stop) {
+        progress.report({ message: "Cancel stops the program and shows its profile so far." });
+        token.onCancellationRequested(() => {
+          try {
+            fs.writeFileSync(stop, "");
+          } catch {
+            // (the folder is gone: the program ends with VS Code)
+          }
+          vscode.window.setStatusBarMessage("$(sync~spin) Mimic: stopping the program and reading its profile…", run);
+        });
+      }
+      return run;
+    },
   );
   let report;
   try {

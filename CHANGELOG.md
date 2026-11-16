@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.3
+
+- **Profiling a server can be stopped.** With Mimic 0.3.15 or later the profiling notification has a Cancel: it stops the program and shows the profile of the time it ran. (Before, profiling a program that does not end by itself, such as a web server, ran until VS Code closed.)
+
 ## 0.10.2
 
 - The Mimic side bar's icon is Mimic's octopus (it looked like a crown).
