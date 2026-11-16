@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.2
+
+- The Mimic side bar's icon is Mimic's octopus (it looked like a crown).
+
 ## 0.10.1
 
 - **Run**, **Debug** and **Profile** appear above `ƒ main()` too (the glyph of `fn`), not only above `fn main()`.

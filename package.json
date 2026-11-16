@@ -2,7 +2,7 @@
   "name": "mimic",
   "displayName": "Mimic",
   "description": "The Mimic language: highlighting, errors as you type, hover, go to definition, glyph input, formatting, Run, Test and Debug, the test explorer, the manual, and installing Mimic.",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "publisher": "mimiccodes",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
