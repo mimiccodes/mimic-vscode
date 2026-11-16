@@ -44,3 +44,22 @@ jobs:
           }
           & "$env:USERPROFILE\.mimic\bin\mimic.exe" --version
           if ($LASTEXITCODE -ne 0) { throw "mimic does not run" }
+  # Updating while the language server runs the old mimic (as an open
+  # editor does): Linux reports "Text file busy" to a copy over it
+  linux-update-while-running:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install 0.3.13, keep mimic lsp running, update to the latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          get() { mkdir -p "$RUNNER_TEMP/$1"; gh release download $2 --repo mimiccodes/mimic --pattern 'mimic-*-linux-x86_64.tar.gz' --dir "$RUNNER_TEMP/$1"; tar -xzf "$RUNNER_TEMP/$1"/*.tar.gz -C "$RUNNER_TEMP/$1"; }
+          get old v0.3.13
+          get new ""
+          sh "$RUNNER_TEMP"/old/mimic-*/install.sh
+          ~/.mimic/bin/mimic --version
+          (sleep 300 | ~/.mimic/bin/mimic lsp > /dev/null 2>&1 &)
+          sleep 2
+          sh "$RUNNER_TEMP"/new/mimic-*/install.sh
+          ~/.mimic/bin/mimic --version
