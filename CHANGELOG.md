@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.4
+
+- **Installing or updating Mimic on Windows** failed with "the argument … install.ps1 to the -File parameter does not exist": the download was unpacked with PowerShell's `Expand-Archive`, which does not load where the execution policy forbids scripts, and that failure went unnoticed. It is now unpacked with Windows' own `tar`, with `Expand-Archive` (policy bypassed) as the fallback, and a failed unpack says why.
+
 ## 0.10.3
 
 - **Profiling a server can be stopped.** With Mimic 0.3.15 or later the profiling notification has a Cancel: it stops the program and shows the profile of the time it ran. (Before, profiling a program that does not end by itself, such as a web server, ran until VS Code closed.)

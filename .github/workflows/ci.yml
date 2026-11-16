@@ -17,3 +17,30 @@ jobs:
         with:
           name: mimic-vsix
           path: mimic.vsix
+  # What "Install/Update Mimic" does on Windows, with the latest release:
+  # unpack with Windows' tar, run install.ps1 under a policy that forbids
+  # scripts (bypassed as the extension does), then update over it
+  windows-install:
+    runs-on: windows-latest
+    steps:
+      - name: Install the latest Mimic as the extension does, twice
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dir = Join-Path $env:RUNNER_TEMP 'mimic-install'
+          New-Item -ItemType Directory -Force $dir | Out-Null
+          gh release download --repo mimiccodes/mimic --pattern 'mimic-*-windows-x86_64.zip' --dir $dir
+          $zip = Get-ChildItem $dir -Filter *.zip | Select-Object -First 1
+          & "$env:SystemRoot\System32\tar.exe" -xf $zip.FullName -C $dir
+          if ($LASTEXITCODE -ne 0) { throw "tar failed" }
+          $script = Join-Path $dir ($zip.BaseName + '\install.ps1')
+          if (-not (Test-Path $script)) { throw "no install.ps1 after unpacking" }
+          Set-ExecutionPolicy -Scope CurrentUser Restricted -Force
+          foreach ($i in 1, 2) {
+            powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $script
+            if ($LASTEXITCODE -ne 0) { throw "install.ps1 failed (run $i)" }
+          }
+          & "$env:USERPROFILE\.mimic\bin\mimic.exe" --version
+          if ($LASTEXITCODE -ne 0) { throw "mimic does not run" }

@@ -191,15 +191,34 @@ async function installMimic() {
         if (!want || want !== got) throw new Error(`the download does not match SHA256SUMS (${got})`);
       }
       progress.report({ message: "unpacking…" });
-      const unpack = tag.startsWith("windows")
-        ? await exec("powershell", ["-NoProfile", "-Command", `Expand-Archive -Force -LiteralPath '${path.join(dir, name)}' -DestinationPath '${dir}'`])
-        : await exec("tar", ["-xzf", path.join(dir, name), "-C", dir]);
-      if (unpack.code !== 0) throw new Error(`unpacking failed: ${unpack.stderr}`);
+      const windows = tag.startsWith("windows");
+      const zip = path.join(dir, name);
       const pkg = path.join(dir, name.replace(/\.(zip|tar\.gz)$/, ""));
+      const script = path.join(pkg, windows ? "install.ps1" : "install.sh");
+      let unpack;
+      if (windows) {
+        // Windows' own tar (Windows 10 and later) reads zip files. PowerShell's
+        // Expand-Archive is a script module: where the execution policy
+        // forbids scripts it does not load, and that failure did not fail
+        // the command (the installer was then missing). It is the fallback,
+        // with the policy bypassed and errors made fatal.
+        const tarExe = path.join(process.env.SystemRoot || "C:\\Windows", "System32", "tar.exe");
+        unpack = fs.existsSync(tarExe) ? await exec(tarExe, ["-xf", zip, "-C", dir]) : { code: -1, stdout: "", stderr: "no tar.exe" };
+        if (unpack.code !== 0 || !fs.existsSync(script)) {
+          const q = (p) => `'${p.replace(/'/g, "''")}'`;
+          unpack = await exec("powershell", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", `$ErrorActionPreference = 'Stop'; Expand-Archive -Force -LiteralPath ${q(zip)} -DestinationPath ${q(dir)}`]);
+        }
+      } else {
+        unpack = await exec("tar", ["-xzf", zip, "-C", dir]);
+      }
+      if (!fs.existsSync(script)) {
+        const why = (unpack.stderr || unpack.stdout || "").trim().split("\n").pop();
+        throw new Error(`unpacking ${name} did not give ${path.basename(script)}${why ? `: ${why}` : ""}`);
+      }
       progress.report({ message: "installing…" });
-      const r = tag.startsWith("windows")
-        ? await exec("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path.join(pkg, "install.ps1")])
-        : await exec("/bin/sh", [path.join(pkg, "install.sh")]);
+      const r = windows
+        ? await exec("powershell", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", script])
+        : await exec("/bin/sh", [script]);
       log(r.stdout + r.stderr);
       if (r.code !== 0) throw new Error(`the installer failed (see the Mimic log): ${(r.stderr || r.stdout).trim().split("\n").pop()}`);
     } finally {
