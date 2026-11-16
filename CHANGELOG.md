@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.1
+
+- **Run**, **Debug** and **Profile** appear above `ƒ main()` too (the glyph of `fn`), not only above `fn main()`.
+
 ## 0.10.0
 
 - **Show as Table and Chart** on a debugger variable holding a list or matrix of numbers: its values in a table shaded by size, and a bar chart for a list.

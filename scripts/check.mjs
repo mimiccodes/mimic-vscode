@@ -38,6 +38,7 @@ assert.equal(u.newer("0.3.5", "0.3.4"), true);
 assert.equal(u.newer("0.2.9", "0.3.4"), false);
 assert.equal(u.newer("0.3.4", "0.3.4"), false);
 assert.ok(u.MAIN.test("pub fn main() {"));
+assert.ok(u.MAIN.test("ƒ main() {") && u.MAIN.test("pub ƒmain() {") && !u.MAIN.test("fn mainly() {"));
 assert.deepEqual(u.testsIn('test "adds \\"x\\"" {\n}\n// > f(1)\n// 2').map((t) => t.name), ['adds \\"x\\"', "example on line 3"]);
 const r = u.parseTestOutput("     Testing 2 tests\n  ✓ square\n  ✗ a wrong one\n      line 13: expect(square(2) == 5)\n        left:  4\n        right: 5\n  1 passed, 1 failed (0.01 s)\n");
 assert.equal(r.get("square").ok, true);

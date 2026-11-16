@@ -12,7 +12,8 @@ function newer(a, b) {
 }
 
 /** `fn main(`, and `test "name"` (the name, with its escapes). */
-const MAIN = /^\s*(pub\s+)?fn\s+main\s*\(/;
+/** `fn main(` (or `ƒ main(`, its glyph). */
+const MAIN = /^\s*(pub\s+)?(fn\s+|ƒ\s*)main\s*\(/;
 const TEST = /^\s*test\s+"((?:[^"\\]|\\.)*)"/;
 
 /** The tests of a file: `test "…"` blocks and examples in comments. */
