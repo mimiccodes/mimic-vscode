@@ -427,7 +427,7 @@
     },
     "digraph": {
       "name": "keyword.operator.digraph.mimic",
-      "match": "\\\\[A-Za-z^#.&|!_<>=/%]"
+      "match": "\\\\[A-Za-z0-9^#.&|!_<>=/%?:]"
     },
     "operator": {
       "patterns": [
