@@ -307,11 +307,11 @@
         },
         {
           "name": "keyword.control.mimic",
-          "match": "\\b(if|else|match|return|arms|with)\\b"
+          "match": "\\b(if|else|match|return|arms|with|while|for|in|break)\\b"
         },
         {
           "name": "keyword.control.mimic",
-          "match": "⋔|⍰|⋄|⏎|⊨|⊕"
+          "match": "⋔|⍰|⋄|⏎|⊨|⊕|⟳|↯"
         },
         {
           "name": "storage.modifier.mimic",

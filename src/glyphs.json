@@ -424,7 +424,21 @@
     "word": "for",
     "digraph": "\\F",
     "kind": "syntax",
-    "doc": "a property test's inputs (⊢ \"…\" ∀ x: i64 { … })"
+    "doc": "a loop over a range or a list (∀ i in 0 ‥ n { … }); a property test's inputs (⊢ \"…\" ∀ x: i64 { … })"
+  },
+  {
+    "glyph": "⟳",
+    "word": "while",
+    "digraph": "\\O",
+    "kind": "syntax",
+    "doc": "a loop while a condition holds (⟳ i < n { … })"
+  },
+  {
+    "glyph": "↯",
+    "word": "break",
+    "digraph": "\\B",
+    "kind": "syntax",
+    "doc": "leave the innermost loop"
   },
   {
     "glyph": "⎘",
