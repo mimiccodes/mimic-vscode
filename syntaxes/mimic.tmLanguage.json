@@ -336,6 +336,10 @@
         {
           "name": "constant.language.boolean.mimic",
           "match": "\\b(true|false)\\b|●|○"
+        },
+        {
+          "name": "constant.language.empty.mimic",
+          "match": "⍬"
         }
       ]
     },
