@@ -299,5 +299,131 @@
     "digraph": "\\y",
     "kind": "syntax",
     "doc": "arms (a = …) { … arm(x) … arm(y) }: parallel divide and conquer"
+  },
+  {
+    "glyph": "⇑",
+    "word": "pub",
+    "digraph": "\\U",
+    "kind": "syntax",
+    "doc": "public: visible outside its module (⇑ ƒ area(…))"
+  },
+  {
+    "glyph": "⇄",
+    "word": "mut",
+    "digraph": "\\D",
+    "kind": "syntax",
+    "doc": "mutable binding (⇄ x ← 0)"
+  },
+  {
+    "glyph": "⍰",
+    "word": "if",
+    "digraph": "\\?",
+    "kind": "syntax",
+    "doc": "if (⍰ x > 0 { … } ⋄ { … })"
+  },
+  {
+    "glyph": "⋄",
+    "word": "else",
+    "digraph": "\\:",
+    "kind": "syntax",
+    "doc": "else, and `e ⋄ { … }`: the value inside an Option or Result, else the block"
+  },
+  {
+    "glyph": "⏎",
+    "word": "return",
+    "digraph": "\\L",
+    "kind": "syntax",
+    "doc": "return from the function"
+  },
+  {
+    "glyph": "⇐",
+    "word": "use",
+    "digraph": "\\I",
+    "kind": "syntax",
+    "doc": "use a module (⇐ text)"
+  },
+  {
+    "glyph": "≔",
+    "word": "as",
+    "digraph": "\\A",
+    "kind": "syntax",
+    "doc": "rename in `use` (⇐ text ≔ t)"
+  },
+  {
+    "glyph": "⌁",
+    "word": "extern",
+    "digraph": "\\E",
+    "kind": "syntax",
+    "doc": "functions from C (⌁ \"C\" { … })"
+  },
+  {
+    "glyph": "☡",
+    "word": "unsafe",
+    "digraph": "\\W",
+    "kind": "syntax",
+    "doc": "unsafe block: calls into C"
+  },
+  {
+    "glyph": "✓",
+    "word": "trusted",
+    "digraph": "\\V",
+    "kind": "syntax",
+    "doc": "trusted extern: C calls outside `unsafe`"
+  },
+  {
+    "glyph": "⊡",
+    "word": "type",
+    "digraph": "\\Y",
+    "kind": "syntax",
+    "doc": "type declaration (⊡ Point = { x: f64, y: f64 })"
+  },
+  {
+    "glyph": "⊨",
+    "word": "match",
+    "digraph": "\\K",
+    "kind": "syntax",
+    "doc": "match on patterns"
+  },
+  {
+    "glyph": "⊕",
+    "word": "with",
+    "digraph": "\\w",
+    "kind": "syntax",
+    "doc": "{ r ⊕ f: x }: a record with fields replaced"
+  },
+  {
+    "glyph": "●",
+    "word": "true",
+    "digraph": "\\1",
+    "kind": "syntax",
+    "doc": "true"
+  },
+  {
+    "glyph": "○",
+    "word": "false",
+    "digraph": "\\0",
+    "kind": "syntax",
+    "doc": "false"
+  },
+  {
+    "glyph": "⊢",
+    "word": "test",
+    "digraph": "\\H",
+    "kind": "syntax",
+    "doc": "a test block (⊢ \"adds\" { expect(1 + 1 == 2) })"
+  },
+  {
+    "glyph": "∀",
+    "word": "for",
+    "digraph": "\\F",
+    "kind": "syntax",
+    "doc": "a property test's inputs (⊢ \"…\" ∀ x: i64 { … })"
+  },
+  {
+    "glyph": "⎘",
+    "word": "include",
+    "digraph": "\\C",
+    "kind": "syntax",
+    "doc": "a C header in an extern block (⎘ \"math.h\")"
   }
 ]
