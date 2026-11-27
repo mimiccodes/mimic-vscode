@@ -301,6 +301,13 @@
     "doc": "arms (a = …) { … arm(x) … arm(y) }: parallel divide and conquer"
   },
   {
+    "glyph": "⍬",
+    "word": "[] of i64",
+    "digraph": "\\z",
+    "kind": "syntax",
+    "doc": "an empty list of i64; ⍬[f64], ⍬[str], ⍬[Point]: of that element type"
+  },
+  {
     "glyph": "⇑",
     "word": "pub",
     "digraph": "\\U",
