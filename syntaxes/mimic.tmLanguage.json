@@ -344,6 +344,10 @@
         {
           "name": "constant.character.mimic",
           "match": "`(?:[^`\\\\\\n]|\\\\[ntr0\\\\`'\"]|\\\\x[0-9a-fA-F]{2}|\\\\u\\{[0-9a-fA-F]+\\})`"
+        },
+        {
+          "name": "invalid.illegal.character.mimic",
+          "match": "`[^`\\n]*`?"
         }
       ]
     },
