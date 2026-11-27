@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Every keyword has a glyph** (Mimic 0.4.3): `⇑` pub, `⇄` mut, `⍰` if, `⋄` else, `⏎` return, `⇐` use, `≔` as, `⌁` extern, `☡` unsafe, `✓` trusted, `⊡` type, `⊨` match, `⊕` with, `●` true, `○` false, `⊢` test, `∀` for, `⎘` include. They are coloured as their words, and the glyph palette and digraph completion offer them (61 glyphs).
+
 ## 0.10.5
 
 - **Mimic is found after a fresh start.** Right after VS Code starts (or after an update), the first run of `mimic` can take a while: the system scans the new program (Gatekeeper on macOS, Windows Defender) while other extensions start. A check that took over 15 seconds counted as "not found". The first check now waits up to 60 seconds, the rest run side by side, and when Mimic is not found the extension looks again after 5, 20 and 60 seconds, so no reload is needed. The Mimic log says why each place it looked failed (not there, no answer, exit status).

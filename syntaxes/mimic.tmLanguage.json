@@ -311,7 +311,7 @@
         },
         {
           "name": "keyword.control.mimic",
-          "match": "⋔"
+          "match": "⋔|⍰|⋄|⏎|⊨|⊕"
         },
         {
           "name": "storage.modifier.mimic",
@@ -319,7 +319,11 @@
         },
         {
           "name": "keyword.other.mimic",
-          "match": "§|ƒ"
+          "match": "§|ƒ|⊡|⇐|≔|⌁|⎘|⊢|∀"
+        },
+        {
+          "name": "storage.modifier.mimic",
+          "match": "⇑|⇄|☡|✓"
         },
         {
           "name": "keyword.other.mimic",
@@ -331,7 +335,7 @@
         },
         {
           "name": "constant.language.boolean.mimic",
-          "match": "\\b(true|false)\\b"
+          "match": "\\b(true|false)\\b|●|○"
         }
       ]
     },
