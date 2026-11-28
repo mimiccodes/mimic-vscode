@@ -196,6 +196,13 @@
     "doc": "x ↩ x + 1  (reassign a mut binding)"
   },
   {
+    "glyph": "+↩",
+    "word": "+=",
+    "digraph": "+\\=",
+    "kind": "syntax",
+    "doc": "x +↩ 1  (x ↩ x + 1; also -↩ ×↩ ÷↩, -= *= /=)"
+  },
+  {
     "glyph": "▷",
     "word": "|>",
     "digraph": "\\>",
